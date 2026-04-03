@@ -15,7 +15,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(googletest)
 
-add_executable(PrettyMemoryTests test_main.cpp)
+add_executable(PrettyMemoryTests test_main.cpp CountableObject.h CountableObject.Test.cpp)
 target_link_libraries(PrettyMemoryTests PRIVATE PrettyMemory GTest::gtest_main)
 
 include(GoogleTest)
