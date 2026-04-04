@@ -1,0 +1,435 @@
+#include "PrettyMemoryTest.h"
+
+using namespace prtm;
+
+// OwnerPtr() = default;
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Constructor, Default)
+{
+    OwnerPtr<TestableObject> obj;
+    EXPECT_EQ(TestableObject::Balance, 0);
+    EXPECT_EQ(obj.Get(), nullptr);
+}
+DEFINE_TEST_END
+
+// OwnerPtr(std::nullptr_t) {}
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Constructor, FromNullptr)
+{
+    OwnerPtr<TestableObject> opObj{ nullptr };
+    EXPECT_EQ(TestableObject::Balance, 0);
+    EXPECT_EQ(opObj.Get(), nullptr);
+}
+DEFINE_TEST_END
+
+// OwnerPtr(typename OwnerPtr<VT2, DT2>::Pointer pOther)
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Constructor, FromRawPointer)
+{
+    TestableObject* pRaw = new TestableObject;
+    EXPECT_EQ(TestableObject::Balance, 1);
+    OwnerPtr<TestableObject> opObj{ pRaw };
+    EXPECT_EQ(TestableObject::Balance, 1);
+}
+DEFINE_TEST_END
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Constructor, FromRawPointerNullptr)
+{
+    TestableObject* pRaw = nullptr;
+    OwnerPtr<TestableObject> opObj{ pRaw };
+    EXPECT_EQ(TestableObject::Balance, 0);
+    EXPECT_EQ(opObj.Get(), nullptr);
+}
+DEFINE_TEST_END
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Constructor, FromRawDerivedPointer)
+{
+    class DerivedObject : public TestableObject
+    {
+    };
+
+    TestableObject* pRaw = new DerivedObject;
+    EXPECT_EQ(TestableObject::Balance, 1);
+    OwnerPtr<TestableObject> opObj{ pRaw };
+    EXPECT_EQ(TestableObject::Balance, 1);
+}
+DEFINE_TEST_END
+
+// OwnerPtr(OwnerPtr<VT2, DT2>&& other) noexcept
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Constructor, Move)
+{
+    OwnerPtr<TestableObject> opObj1{ new TestableObject };
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_NE(opObj1.Get(), nullptr);
+
+    OwnerPtr<TestableObject> opObj2{ std::move(opObj1) };
+    EXPECT_EQ(TestableObject::Balance, 1);
+
+    EXPECT_EQ(opObj1.Get(), nullptr);
+    EXPECT_NE(opObj2.Get(), nullptr);
+}
+DEFINE_TEST_END
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Constructor, MoveNullptr)
+{
+    OwnerPtr<TestableObject> opObj1{ nullptr };
+    EXPECT_EQ(TestableObject::Balance, 0);
+    EXPECT_EQ(opObj1.Get(), nullptr);
+
+    OwnerPtr<TestableObject> opObj2{ std::move(opObj1) };
+    EXPECT_EQ(TestableObject::Balance, 0);
+    EXPECT_EQ(opObj1.Get(), nullptr);
+    EXPECT_EQ(opObj2.Get(), nullptr);
+}
+DEFINE_TEST_END
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Constructor, MoveFromEmpty)
+{
+    OwnerPtr<TestableObject> opObj1;
+    EXPECT_EQ(TestableObject::Balance, 0);
+    EXPECT_EQ(opObj1.Get(), nullptr);
+
+    OwnerPtr<TestableObject> opObj2{ std::move(opObj1) };
+    EXPECT_EQ(TestableObject::Balance, 0);
+    EXPECT_EQ(opObj1.Get(), nullptr);
+    EXPECT_EQ(opObj2.Get(), nullptr);
+}
+DEFINE_TEST_END
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Constructor, MoveFromDerived)
+{
+    class DerivedObject : public TestableObject
+    {
+    };
+
+    OwnerPtr<TestableObject> opObj1{ new DerivedObject };
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_NE(opObj1.Get(), nullptr);
+
+    OwnerPtr<TestableObject> opObj2{ std::move(opObj1) };
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_EQ(opObj1.Get(), nullptr);
+    EXPECT_NE(opObj2.Get(), nullptr);
+}
+DEFINE_TEST_END
+
+// OwnerPtr& operator=(OwnerPtr<VT2, DT2>&& other) noexcept
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Assignment, Move)
+{
+    OwnerPtr<TestableObject> opObj1{ new TestableObject };
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_NE(opObj1.Get(), nullptr);
+
+    OwnerPtr<TestableObject> opObj2;
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_EQ(opObj2.Get(), nullptr);
+
+    opObj2 = std::move(opObj1);
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_EQ(opObj1.Get(), nullptr);
+    EXPECT_NE(opObj2.Get(), nullptr);
+}
+DEFINE_TEST_END
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Assignment, MoveNullptr)
+{
+    OwnerPtr<TestableObject> opObj1{ nullptr };
+    EXPECT_EQ(TestableObject::Balance, 0);
+    EXPECT_EQ(opObj1.Get(), nullptr);
+
+    OwnerPtr<TestableObject> opObj2;
+    EXPECT_EQ(TestableObject::Balance, 0);
+    EXPECT_EQ(opObj2.Get(), nullptr);
+
+    opObj2 = std::move(opObj1);
+    EXPECT_EQ(TestableObject::Balance, 0);
+    EXPECT_EQ(opObj1.Get(), nullptr);
+    EXPECT_EQ(opObj2.Get(), nullptr);
+}
+DEFINE_TEST_END
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Assignment, MoveFromEmpty)
+{
+    OwnerPtr<TestableObject> opObj1;
+    EXPECT_EQ(TestableObject::Balance, 0);
+    EXPECT_EQ(opObj1.Get(), nullptr);
+
+    OwnerPtr<TestableObject> opObj2;
+    EXPECT_EQ(TestableObject::Balance, 0);
+    EXPECT_EQ(opObj2.Get(), nullptr);
+
+    opObj2 = std::move(opObj1);
+    EXPECT_EQ(TestableObject::Balance, 0);
+    EXPECT_EQ(opObj1.Get(), nullptr);
+    EXPECT_EQ(opObj2.Get(), nullptr);
+}
+DEFINE_TEST_END
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Assignment, MoveFromDerived)
+{
+    class DerivedObject : public TestableObject
+    {
+    };
+
+    OwnerPtr<TestableObject> opObj1{ new DerivedObject };
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_NE(opObj1.Get(), nullptr);
+
+    OwnerPtr<TestableObject> opObj2;
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_EQ(opObj2.Get(), nullptr);
+
+    opObj2 = std::move(opObj1);
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_EQ(opObj1.Get(), nullptr);
+    EXPECT_NE(opObj2.Get(), nullptr);
+}
+DEFINE_TEST_END
+
+// ConstPointer Get() const
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, ConstGet, 0)
+{
+    const OwnerPtr<TestableObject> obj;
+    EXPECT_EQ(TestableObject::Balance, 0);
+    EXPECT_EQ(obj.Get(), nullptr);
+}
+DEFINE_TEST_END
+
+// void Nullify()
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Nullify, 0)
+{
+    OwnerPtr<TestableObject> obj{ new TestableObject };
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_NE(obj.Get(), nullptr);
+
+    obj.Nullify();
+    EXPECT_EQ(TestableObject::Balance, 0);
+    EXPECT_EQ(obj.Get(), nullptr);
+}
+DEFINE_TEST_END
+
+// void Reset(std::nullptr_t)
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Reset, Nullptr)
+{
+    OwnerPtr<TestableObject> obj{ new TestableObject };
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_NE(obj.Get(), nullptr);
+
+    obj.Reset(nullptr);
+    EXPECT_EQ(TestableObject::Balance, 0);
+    EXPECT_EQ(obj.Get(), nullptr);
+}
+DEFINE_TEST_END
+
+// void Reset(typename OwnerPtr<VT2, DT2>::Pointer pNew)
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Reset, FromRawPointer)
+{
+    OwnerPtr<TestableObject> obj;
+    EXPECT_EQ(TestableObject::Balance, 0);
+    EXPECT_EQ(obj.Get(), nullptr);
+
+    TestableObject* pRaw = new TestableObject;
+    EXPECT_EQ(TestableObject::Balance, 1);
+
+    obj.Reset(pRaw);
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_EQ(obj.Get(), pRaw);
+}
+DEFINE_TEST_END
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Reset, FromRawPointerNullptr)
+{
+    OwnerPtr<TestableObject> obj;
+    EXPECT_EQ(TestableObject::Balance, 0);
+    EXPECT_EQ(obj.Get(), nullptr);
+
+    TestableObject* pRaw = nullptr;
+    obj.Reset(pRaw);
+    EXPECT_EQ(TestableObject::Balance, 0);
+    EXPECT_EQ(obj.Get(), nullptr);
+}
+DEFINE_TEST_END
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Reset, FromRawDerivedPointer)
+{
+    class DerivedObject : public TestableObject
+    {
+    };
+
+    OwnerPtr<TestableObject> obj;
+    EXPECT_EQ(TestableObject::Balance, 0);
+    EXPECT_EQ(obj.Get(), nullptr);
+
+    TestableObject* pRaw = new DerivedObject;
+    EXPECT_EQ(TestableObject::Balance, 1);
+
+    obj.Reset(pRaw);
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_EQ(obj.Get(), pRaw);
+}
+DEFINE_TEST_END
+
+// [[nodiscard]] Pointer Release()
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Release, 0)
+{
+    OwnerPtr<TestableObject> obj{ new TestableObject };
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_NE(obj.Get(), nullptr);
+
+    TestableObject* pReleased = obj.Release();
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_EQ(obj.Get(), nullptr);
+    EXPECT_NE(pReleased, nullptr);
+
+    delete pReleased;
+    EXPECT_EQ(TestableObject::Balance, 0);
+}
+DEFINE_TEST_END
+
+// void Swap(OwnerPtr<VT, DT2>& other) noexcept
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Swap, 0)
+{
+    TestableObject* pRaw1 = new TestableObject;
+    TestableObject* pRaw2 = new TestableObject;
+    EXPECT_EQ(TestableObject::Balance, 2);
+
+    OwnerPtr<TestableObject> obj1{ pRaw1 };
+    OwnerPtr<TestableObject> obj2{ pRaw2 };
+    EXPECT_EQ(TestableObject::Balance, 2);
+    EXPECT_EQ(obj1.Get(), pRaw1);
+    EXPECT_EQ(obj2.Get(), pRaw2);
+
+    obj1.Swap(obj2);
+    EXPECT_EQ(TestableObject::Balance, 2);
+    EXPECT_EQ(obj1.Get(), pRaw2);
+    EXPECT_EQ(obj2.Get(), pRaw1);
+}
+DEFINE_TEST_END
+
+// [[nodiscard]] OwnerPtr<VT2, DT2> Transfer()
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Transfer, FromThisType)
+{
+    OwnerPtr<TestableObject> obj1{ new TestableObject };
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_NE(obj1.Get(), nullptr);
+
+    OwnerPtr<TestableObject> obj2 = obj1.Transfer();
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_EQ(obj1.Get(), nullptr);
+    EXPECT_NE(obj2.Get(), nullptr);
+}
+DEFINE_TEST_END
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Transfer, FromDerivedType)
+{
+    class DerivedObject : public TestableObject
+    {
+    };
+
+    OwnerPtr<DerivedObject> obj1{ new DerivedObject };
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_NE(obj1.Get(), nullptr);
+
+    OwnerPtr<TestableObject> obj2 = obj1.Transfer();
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_EQ(obj1.Get(), nullptr);
+    EXPECT_NE(obj2.Get(), nullptr);
+}
+DEFINE_TEST_END
+
+// [[nodiscard]] OwnerPtr<VT2, DT2> Cast()
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Cast, ToSameType)
+{
+    OwnerPtr<TestableObject> obj1{ new TestableObject };
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_NE(obj1.Get(), nullptr);
+
+    OwnerPtr<TestableObject> obj2 = obj1.Cast();
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_EQ(obj1.Get(), nullptr);
+    EXPECT_NE(obj2.Get(), nullptr);
+}
+DEFINE_TEST_END
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Cast, ToBaseType)
+{
+    class DerivedObject : public TestableObject
+    {
+    };
+
+    OwnerPtr<DerivedObject> obj1{ new DerivedObject };
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_NE(obj1.Get(), nullptr);
+
+    OwnerPtr<TestableObject> obj2 = obj1.Cast();
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_EQ(obj1.Get(), nullptr);
+    EXPECT_NE(obj2.Get(), nullptr);
+}
+DEFINE_TEST_END
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Cast, ToDerivedType)
+{
+    class DerivedObject : public TestableObject
+    {
+    };
+
+    OwnerPtr<TestableObject> obj1{ new DerivedObject };
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_NE(obj1.Get(), nullptr);
+
+    OwnerPtr<DerivedObject> obj2 = obj1.Cast<DerivedObject>();
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_EQ(obj1.Get(), nullptr);
+    EXPECT_NE(obj2.Get(), nullptr);
+}
+DEFINE_TEST_END
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Cast, ToRelatedType)
+{
+    class BaseObject
+    {
+    public:
+        virtual ~BaseObject() = default;
+    };
+
+    class DerivedObject : public BaseObject, public TestableObject
+    {
+    };
+
+    OwnerPtr<TestableObject> obj1{ new DerivedObject };
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_NE(obj1.Get(), nullptr);
+
+    OwnerPtr<BaseObject> obj2 = obj1.Cast<BaseObject>();
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_EQ(obj1.Get(), nullptr);
+    EXPECT_NE(obj2.Get(), nullptr);
+}
+DEFINE_TEST_END
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Cast, ToUnrelatedType)
+{
+    class UnrelatedObject
+    {
+    };
+    OwnerPtr<TestableObject> obj1{ new TestableObject };
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_NE(obj1.Get(), nullptr);
+
+    OwnerPtr<UnrelatedObject> obj2 = obj1.Cast<UnrelatedObject>();
+    EXPECT_EQ(TestableObject::Balance, 0);
+    EXPECT_EQ(obj1.Get(), nullptr);
+    EXPECT_EQ(obj2.Get(), nullptr);
+}
+DEFINE_TEST_END

@@ -15,7 +15,14 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(googletest)
 
-add_executable(PrettyMemoryTests test_main.cpp CountableObject.h CountableObject.Test.cpp)
+file(
+    GLOB_RECURSE PRETTY_MEMORY_TEST_SOURCES
+    CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+)
+
+add_executable(PrettyMemoryTests ${PRETTY_MEMORY_TEST_SOURCES})
 target_link_libraries(PrettyMemoryTests PRIVATE PrettyMemory GTest::gtest_main)
 
 include(GoogleTest)
