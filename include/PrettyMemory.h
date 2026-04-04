@@ -100,6 +100,7 @@ namespace prtm
         using ConstPointer = const ValueType*;
         using Reference = ValueType&;
         using ConstReference = const ValueType&;
+        using DeleterType = DT;
 
         template<typename>
         friend class ShadowPtr;
@@ -286,5 +287,185 @@ namespace prtm
     private:
 
         detail::ControlBlock* m_pControlBlock{ nullptr };
+    };
+
+    template<typename VT, typename DT1 = detail::DefaultDeleter<VT>, typename DT2 = detail::DefaultDeleter<VT>>
+    bool operator==(const OwnerPtr<VT, DT1>& lhs, const OwnerPtr<VT, DT2>& rhs)
+    {
+        return lhs.Get() == rhs.Get();
+    }
+
+    template<typename VT, typename DT1 = detail::DefaultDeleter<VT>, typename DT2 = detail::DefaultDeleter<VT>>
+    bool operator!=(const OwnerPtr<VT, DT1>& lhs, const OwnerPtr<VT, DT2>& rhs)
+    {
+        return lhs.Get() != rhs.Get();
+    }
+
+    template<typename VT, typename DT1 = detail::DefaultDeleter<VT>, typename DT2 = detail::DefaultDeleter<VT>>
+    bool operator<(const OwnerPtr<VT, DT1>& lhs, const OwnerPtr<VT, DT2>& rhs)
+    {
+        return lhs.Get() < rhs.Get();
+    }
+
+    template<typename VT, typename DT1 = detail::DefaultDeleter<VT>, typename DT2 = detail::DefaultDeleter<VT>>
+    bool operator>(const OwnerPtr<VT, DT1>& lhs, const OwnerPtr<VT, DT2>& rhs)
+    {
+        return lhs.Get() > rhs.Get();
+    }
+
+    template<typename VT, typename DT1 = detail::DefaultDeleter<VT>, typename DT2 = detail::DefaultDeleter<VT>>
+    bool operator<=(const OwnerPtr<VT, DT1>& lhs, const OwnerPtr<VT, DT2>& rhs)
+    {
+        return lhs.Get() <= rhs.Get();
+    }
+
+    template<typename VT, typename DT1 = detail::DefaultDeleter<VT>, typename DT2 = detail::DefaultDeleter<VT>>
+    bool operator>=(const OwnerPtr<VT, DT1>& lhs, const OwnerPtr<VT, DT2>& rhs)
+    {
+        return lhs.Get() >= rhs.Get();
+    }
+
+    template<typename VT, typename DT = detail::DefaultDeleter<VT>>
+    bool operator==(const OwnerPtr<VT, DT>& lhs, std::nullptr_t)
+    {
+        return lhs.Get() == nullptr;
+    }
+
+    template<typename VT, typename DT = detail::DefaultDeleter<VT>>
+    bool operator!=(const OwnerPtr<VT, DT>& lhs, std::nullptr_t)
+    {
+        return lhs.Get() != nullptr;
+    }
+
+    template<typename VT, typename DT = detail::DefaultDeleter<VT>>
+    bool operator<(const OwnerPtr<VT, DT>& lhs, std::nullptr_t)
+    {
+        return lhs.Get() < nullptr;
+    }
+
+    template<typename VT, typename DT = detail::DefaultDeleter<VT>>
+    bool operator>(const OwnerPtr<VT, DT>& lhs, std::nullptr_t)
+    {
+        return lhs.Get() > nullptr;
+    }
+
+    template<typename VT, typename DT = detail::DefaultDeleter<VT>>
+    bool operator<=(const OwnerPtr<VT, DT>& lhs, std::nullptr_t)
+    {
+        return lhs.Get() <= nullptr;
+    }
+
+    template<typename VT, typename DT = detail::DefaultDeleter<VT>>
+    bool operator>=(const OwnerPtr<VT, DT>& lhs, std::nullptr_t)
+    {
+        return lhs.Get() >= nullptr;
+    }
+
+    template<typename VT, typename DT = detail::DefaultDeleter<VT>>
+    bool operator==(std::nullptr_t, const OwnerPtr<VT, DT>& rhs)
+    {
+        return nullptr == rhs.Get();
+    }
+
+    template<typename VT, typename DT = detail::DefaultDeleter<VT>>
+    bool operator!=(std::nullptr_t, const OwnerPtr<VT, DT>& rhs)
+    {
+        return nullptr != rhs.Get();
+    }
+
+    template<typename VT, typename DT = detail::DefaultDeleter<VT>>
+    bool operator<(std::nullptr_t, const OwnerPtr<VT, DT>& rhs)
+    {
+        return nullptr < rhs.Get();
+    }
+
+    template<typename VT, typename DT = detail::DefaultDeleter<VT>>
+    bool operator>(std::nullptr_t, const OwnerPtr<VT, DT>& rhs)
+    {
+        return nullptr > rhs.Get();
+    }
+
+    template<typename VT, typename DT = detail::DefaultDeleter<VT>>
+    bool operator<=(std::nullptr_t, const OwnerPtr<VT, DT>& rhs)
+    {
+        return nullptr <= rhs.Get();
+    }
+
+    template<typename VT, typename DT = detail::DefaultDeleter<VT>>
+    bool operator>=(std::nullptr_t, const OwnerPtr<VT, DT>& rhs)
+    {
+        return nullptr >= rhs.Get();
+    }
+}
+
+namespace std
+{
+    template<typename VT, typename DT1 = prtm::detail::DefaultDeleter<VT>, typename DT2 = prtm::detail::DefaultDeleter<VT>>
+    void swap(prtm::OwnerPtr<VT, DT1>& lhs, prtm::OwnerPtr<VT, DT2>& rhs) noexcept
+    {
+        lhs.Swap(rhs);
+    }
+
+    template<typename VT, typename DT>
+    struct hash<prtm::OwnerPtr<VT, DT>>
+    {
+        std::size_t operator()(const prtm::OwnerPtr<VT, DT>& obj) const
+        {
+            return std::hash<typename prtm::OwnerPtr<VT, DT>::Pointer>{}(obj.Get());
+        }
+    };
+
+    template<typename VT, typename DT>
+    struct equal_to<prtm::OwnerPtr<VT, DT>>
+    {
+        bool operator()(const prtm::OwnerPtr<VT, DT>& lhs, const prtm::OwnerPtr<VT, DT>& rhs) const
+        {
+            return lhs == rhs;
+        }
+    };
+
+    template<typename VT, typename DT>
+    struct not_equal_to<prtm::OwnerPtr<VT, DT>>
+    {
+        bool operator()(const prtm::OwnerPtr<VT, DT>& lhs, const prtm::OwnerPtr<VT, DT>& rhs) const
+        {
+            return !(lhs == rhs);
+        }
+    };
+
+    template<typename VT, typename DT>
+    struct less<prtm::OwnerPtr<VT, DT>>
+    {
+        bool operator()(const prtm::OwnerPtr<VT, DT>& lhs, const prtm::OwnerPtr<VT, DT>& rhs) const
+        {
+            return lhs < rhs;
+        }
+    };
+
+    template<typename VT, typename DT>
+    struct greater<prtm::OwnerPtr<VT, DT>>
+    {
+        bool operator()(const prtm::OwnerPtr<VT, DT>& lhs, const prtm::OwnerPtr<VT, DT>& rhs) const
+        {
+            return lhs > rhs;
+        }
+    };
+
+    template<typename VT, typename DT>
+    struct less_equal<prtm::OwnerPtr<VT, DT>>
+    {
+        bool operator()(const prtm::OwnerPtr<VT, DT>& lhs, const prtm::OwnerPtr<VT, DT>& rhs) const
+        {
+            return lhs <= rhs;
+        }
+    };
+
+    template<typename VT, typename DT>
+    struct greater_equal<prtm::OwnerPtr<VT, DT>>
+    {
+        bool operator()(const prtm::OwnerPtr<VT, DT>& lhs, const prtm::OwnerPtr<VT, DT>& rhs) const
+        {
+            return lhs >= rhs;
+        }
     };
 }
