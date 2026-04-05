@@ -98,3 +98,5 @@ cmake --build build\docs --target docs
 
 - `doc\html`
 
+当修改 push 到 `main` 分支后，GitHub Actions 也会自动重新生成文档，并通过 GitHub Pages 更新网页端文档。
+

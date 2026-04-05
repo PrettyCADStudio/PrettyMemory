@@ -92,6 +92,8 @@ The generated HTML files are written to:
 
 - `doc\html`
 
+When changes are pushed to `main`, GitHub Actions also regenerates the documentation and deploys the web version through GitHub Pages.
+
 ## Notes
 
 - The library is currently header-only, so implementation changes usually happen in `include\PrettyMemory.h`.

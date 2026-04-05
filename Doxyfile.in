@@ -21,7 +21,7 @@ RECURSIVE              = NO
 EXCLUDE_SYMBOLS        = std prtm::detail
 FULL_PATH_NAMES        = NO
 STRIP_FROM_PATH        = "@CMAKE_SOURCE_DIR@"
-FILTER_PATTERNS        = *.h="@CMAKE_SOURCE_DIR@/doxygen-assets/comment-filter.cmd"
+FILTER_PATTERNS        = *.h="@Python3_EXECUTABLE@ @CMAKE_SOURCE_DIR@/doxygen-assets/comment_filter.py"
 
 QUIET                  = YES
 WARN_IF_UNDOCUMENTED   = NO
