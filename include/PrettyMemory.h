@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <functional>
+#include <utility>
 
 namespace prtm
 {
@@ -296,6 +297,14 @@ namespace prtm
         friend class OwnerPtr;
 
     public:
+
+        template<typename... ArgTypes, std::enable_if_t<std::is_constructible_v<VT, ArgTypes...>, int> = 0>
+        static OwnerPtr Create(ArgTypes&&... args)
+        {
+            auto pRaw = new VT{ std::forward<ArgTypes>(args)... };
+            OwnerPtr<VT, DT> owner{ pRaw };
+            return owner;
+        }
 
         OwnerPtr() = default;
 

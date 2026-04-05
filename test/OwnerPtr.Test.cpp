@@ -1,6 +1,40 @@
 #include "PrettyMemoryTest.h"
 
+#include <memory>
+
 using namespace prtm;
+
+// static OwnerPtr Create(...)
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Create, Default)
+{
+    OwnerPtr<TestableObject> obj = OwnerPtr<TestableObject>::Create();
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_NE(obj.Get(), nullptr);
+}
+DEFINE_TEST_END
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Create, ForwardMoveOnlyArgument)
+{
+    class DerivedObject : public TestableObject
+    {
+    public:
+        DerivedObject(int value, std::unique_ptr<int> movedValue)
+            : Value(value), MovedValue(*movedValue)
+        {
+        }
+
+        int Value;
+        int MovedValue;
+    };
+
+    OwnerPtr<DerivedObject> obj = OwnerPtr<DerivedObject>::Create(42, std::make_unique<int>(7));
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_NE(obj.Get(), nullptr);
+    EXPECT_EQ(obj.Get()->Value, 42);
+    EXPECT_EQ(obj.Get()->MovedValue, 7);
+}
+DEFINE_TEST_END
 
 // OwnerPtr() = default;
 
