@@ -45,11 +45,10 @@ namespace prtm
 
         ShadowPtr() = default;
 
-        ShadowPtr(std::nullptr_t)
-        {
-        }
+        ShadowPtr(std::nullptr_t) {}
 
-        ShadowPtr(const ShadowPtr& other)
+        template<typename T2 = T, std::enable_if_t<std::is_convertible_v<T2*, T*>, int> = 0>
+        ShadowPtr(const ShadowPtr<T2>& other)
         {
             if (other.m_pControlBlock)
             {
@@ -58,15 +57,47 @@ namespace prtm
             }
         }
 
-        Pointer Get()
+        template<typename T2 = T, std::enable_if_t<std::is_convertible_v<T2*, T*>, int> = 0>
+        ShadowPtr(ShadowPtr<T2>&& other) noexcept
         {
-            return m_pControlBlock ? static_cast<Pointer>(m_pControlBlock->Data) : nullptr;
+            m_pControlBlock = other.m_pControlBlock;
+            other.m_pControlBlock = nullptr;
         }
 
-        ConstPointer Get() const
+        template<typename T2 = T, std::enable_if_t<std::is_convertible_v<T2*, T*>, int> = 0>
+        ShadowPtr& operator=(const ShadowPtr<T2>& other)
         {
-            return m_pControlBlock ? static_cast<ConstPointer>(m_pControlBlock->Data) : nullptr;
+            if (this != &other)
+            {
+                Destroy();
+                m_pControlBlock = other.m_pControlBlock;
+                if (m_pControlBlock)
+                {
+                    ++m_pControlBlock->ShadowCount;
+                }
+            }
+            return *this;
         }
+
+        template<typename T2 = T, std::enable_if_t<std::is_convertible_v<T2*, T*>, int> = 0>
+        ShadowPtr& operator=(ShadowPtr<T2>&& other) noexcept
+        {
+            if (this != &other)
+            {
+                Destroy();
+                m_pControlBlock = other.m_pControlBlock;
+                other.m_pControlBlock = nullptr;
+            }
+            return *this;
+        }
+
+        ~ShadowPtr() { Destroy(); }
+
+        std::size_t ShadowCount() const { return m_pControlBlock ? m_pControlBlock->ShadowCount : 0; }
+
+        Pointer Get() { return m_pControlBlock ? static_cast<Pointer>(m_pControlBlock->Data) : nullptr; }
+
+        ConstPointer Get() const { return m_pControlBlock ? static_cast<ConstPointer>(m_pControlBlock->Data) : nullptr; }
 
         Pointer Data() { return Get(); }
 
@@ -76,6 +107,8 @@ namespace prtm
 
         bool Expired() const { return nullptr == Get(); }
 
+        bool IsNull() const { return nullptr == Get(); }
+
         Pointer operator->() { return Get(); }
 
         ConstPointer operator->() const { return Get(); }
@@ -84,10 +117,141 @@ namespace prtm
 
         ConstReference operator*() const { return *Get(); }
 
+        void Swap(ShadowPtr& other) noexcept
+        {
+            std::swap(m_pControlBlock, other.m_pControlBlock);
+        }
+
+    private:
+
+        void Destroy()
+        {
+            if (m_pControlBlock)
+            {
+                if (m_pControlBlock->ShadowCount > 0)
+                {
+                    --m_pControlBlock->ShadowCount;
+                }
+                if (nullptr == m_pControlBlock->Data && 0 == m_pControlBlock->ShadowCount)
+                {
+                    delete m_pControlBlock;
+                }
+                m_pControlBlock = nullptr;
+            }
+        }
+
     private:
 
         detail::ControlBlock* m_pControlBlock{ nullptr };
     };
+
+    template<typename T>
+    bool operator==(const ShadowPtr<T>& lhs, const ShadowPtr<T>& rhs)
+    {
+        return lhs.Get() == rhs.Get();
+    }
+
+    template<typename T>
+    bool operator!=(const ShadowPtr<T>& lhs, const ShadowPtr<T>& rhs)
+    {
+        return lhs.Get() != rhs.Get();
+    }
+
+    template<typename T>
+    bool operator<(const ShadowPtr<T>& lhs, const ShadowPtr<T>& rhs)
+    {
+        return lhs.Get() < rhs.Get();
+    }
+
+    template<typename T>
+    bool operator<=(const ShadowPtr<T>& lhs, const ShadowPtr<T>& rhs)
+    {
+        return lhs.Get() <= rhs.Get();
+    }
+
+    template<typename T>
+    bool operator>(const ShadowPtr<T>& lhs, const ShadowPtr<T>& rhs)
+    {
+        return lhs.Get() > rhs.Get();
+    }
+
+    template<typename T>
+    bool operator>=(const ShadowPtr<T>& lhs, const ShadowPtr<T>& rhs)
+    {
+        return lhs.Get() >= rhs.Get();
+    }
+
+    template<typename T>
+    bool operator==(const ShadowPtr<T>& lhs, std::nullptr_t)
+    {
+        return lhs.Get() == nullptr;
+    }
+
+    template<typename T>
+    bool operator!=(const ShadowPtr<T>& lhs, std::nullptr_t)
+    {
+        return lhs.Get() != nullptr;
+    }
+
+    template<typename T>
+    bool operator<(const ShadowPtr<T>& lhs, std::nullptr_t)
+    {
+        return lhs.Get() < nullptr;
+    }
+
+    template<typename T>
+    bool operator<=(const ShadowPtr<T>& lhs, std::nullptr_t)
+    {
+        return lhs.Get() <= nullptr;
+    }
+
+    template<typename T>
+    bool operator>(const ShadowPtr<T>& lhs, std::nullptr_t)
+    {
+        return lhs.Get() > nullptr;
+    }
+
+    template<typename T>
+    bool operator>=(const ShadowPtr<T>& lhs, std::nullptr_t)
+    {
+        return lhs.Get() >= nullptr;
+    }
+
+    template<typename T>
+    bool operator==(std::nullptr_t, const ShadowPtr<T>& rhs)
+    {
+        return nullptr == rhs.Get();
+    }
+
+    template<typename T>
+    bool operator!=(std::nullptr_t, const ShadowPtr<T>& rhs)
+    {
+        return nullptr != rhs.Get();
+    }
+
+    template<typename T>
+    bool operator<(std::nullptr_t, const ShadowPtr<T>& rhs)
+    {
+        return nullptr < rhs.Get();
+    }
+
+    template<typename T>
+    bool operator<=(std::nullptr_t, const ShadowPtr<T>& rhs)
+    {
+        return nullptr <= rhs.Get();
+    }
+
+    template<typename T>
+    bool operator>(std::nullptr_t, const ShadowPtr<T>& rhs)
+    {
+        return nullptr > rhs.Get();
+    }
+
+    template<typename T>
+    bool operator>=(std::nullptr_t, const ShadowPtr<T>& rhs)
+    {
+        return nullptr >= rhs.Get();
+    }
 
     template <typename VT, typename DT = detail::DefaultDeleter<VT>>
     class OwnerPtr
@@ -400,6 +564,75 @@ namespace prtm
 
 namespace std
 {
+    template<typename T>
+    void swap(prtm::ShadowPtr<T>& lhs, prtm::ShadowPtr<T>& rhs) noexcept
+    {
+        lhs.Swap(rhs);
+    }
+
+    template<typename T>
+    struct hash<prtm::ShadowPtr<T>>
+    {
+        std::size_t operator()(const prtm::ShadowPtr<T>& obj) const
+        {
+            return std::hash<typename prtm::ShadowPtr<T>::Pointer>{}(obj.Get());
+        }
+    };
+
+    template<typename T>
+    struct equal_to<prtm::ShadowPtr<T>>
+    {
+        bool operator()(const prtm::ShadowPtr<T>& lhs, const prtm::ShadowPtr<T>& rhs) const
+        {
+            return lhs == rhs;
+        }
+    };
+
+    template<typename T>
+    struct not_equal_to<prtm::ShadowPtr<T>>
+    {
+        bool operator()(const prtm::ShadowPtr<T>& lhs, const prtm::ShadowPtr<T>& rhs) const
+        {
+            return lhs != rhs;
+        }
+    };
+
+    template<typename T>
+    struct less<prtm::ShadowPtr<T>>
+    {
+        bool operator()(const prtm::ShadowPtr<T>& lhs, const prtm::ShadowPtr<T>& rhs) const
+        {
+            return lhs < rhs;
+        }
+    };
+
+    template<typename T>
+    struct less_equal<prtm::ShadowPtr<T>>
+    {
+        bool operator()(const prtm::ShadowPtr<T>& lhs, const prtm::ShadowPtr<T>& rhs) const
+        {
+            return lhs <= rhs;
+        }
+    };
+
+    template<typename T>
+    struct greater<prtm::ShadowPtr<T>>
+    {
+        bool operator()(const prtm::ShadowPtr<T>& lhs, const prtm::ShadowPtr<T>& rhs) const
+        {
+            return lhs > rhs;
+        }
+    };
+
+    template<typename T>
+    struct greater_equal<prtm::ShadowPtr<T>>
+    {
+        bool operator()(const prtm::ShadowPtr<T>& lhs, const prtm::ShadowPtr<T>& rhs) const
+        {
+            return lhs >= rhs;
+        }
+    };
+
     template<typename VT, typename DT1 = prtm::detail::DefaultDeleter<VT>, typename DT2 = prtm::detail::DefaultDeleter<VT>>
     void swap(prtm::OwnerPtr<VT, DT1>& lhs, prtm::OwnerPtr<VT, DT2>& rhs) noexcept
     {
