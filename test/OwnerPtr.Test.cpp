@@ -198,6 +198,103 @@ DEFINE_TEST_BEGIN(OwnerPtrTest, ConstGet, 0)
 }
 DEFINE_TEST_END
 
+// Pointer Data()
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Data, 0)
+{
+    class DerivedObject : public TestableObject
+    {
+    public:
+        int Value{ 42 };
+    };
+
+    OwnerPtr<DerivedObject> obj{ new DerivedObject };
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_NE(obj.Data(), nullptr);
+    EXPECT_EQ(obj.Data()->Value, 42);
+}
+DEFINE_TEST_END
+
+// ConstPointer Data() const
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, ConstData, 0)
+{
+    class DerivedObject : public TestableObject
+    {
+    public:
+        int Value{ 42 };
+    };
+
+    const OwnerPtr<DerivedObject> obj{ new DerivedObject };
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_NE(obj.Data(), nullptr);
+    EXPECT_EQ(obj.Data()->Value, 42);
+}
+DEFINE_TEST_END
+
+// Reference operator*()
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Dereference, 0)
+{
+    class DerivedObject : public TestableObject
+    {
+    public:
+        int Value{ 42 };
+    };
+
+    OwnerPtr<DerivedObject> obj{ new DerivedObject };
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_EQ((*obj).Value, 42);
+
+    (*obj).Value = 100;
+    EXPECT_EQ(obj.Get()->Value, 100);
+}
+DEFINE_TEST_END
+
+// ConstReference operator*() const
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, ConstDereference, 0)
+{
+    class DerivedObject : public TestableObject
+    {
+    public:
+        int Value{ 42 };
+    };
+
+    const OwnerPtr<DerivedObject> obj{ new DerivedObject };
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_EQ((*obj).Value, 42);
+}
+DEFINE_TEST_END
+
+// operator bool() const
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Bool, 0)
+{
+    OwnerPtr<TestableObject> emptyObj;
+    EXPECT_EQ(TestableObject::Balance, 0);
+    EXPECT_FALSE(emptyObj);
+
+    OwnerPtr<TestableObject> obj{ new TestableObject };
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_TRUE(obj);
+}
+DEFINE_TEST_END
+
+// bool IsNull() const
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, IsNull, 0)
+{
+    OwnerPtr<TestableObject> emptyObj;
+    EXPECT_EQ(TestableObject::Balance, 0);
+    EXPECT_TRUE(emptyObj.IsNull());
+
+    OwnerPtr<TestableObject> obj{ new TestableObject };
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_FALSE(obj.IsNull());
+}
+DEFINE_TEST_END
+
 // void Nullify()
 
 DEFINE_TEST_BEGIN(OwnerPtrTest, Nullify, 0)
@@ -207,6 +304,20 @@ DEFINE_TEST_BEGIN(OwnerPtrTest, Nullify, 0)
     EXPECT_NE(obj.Get(), nullptr);
 
     obj.Nullify();
+    EXPECT_EQ(TestableObject::Balance, 0);
+    EXPECT_EQ(obj.Get(), nullptr);
+}
+DEFINE_TEST_END
+
+// void Reset()
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Reset, 0)
+{
+    OwnerPtr<TestableObject> obj{ new TestableObject };
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_NE(obj.Get(), nullptr);
+
+    obj.Reset();
     EXPECT_EQ(TestableObject::Balance, 0);
     EXPECT_EQ(obj.Get(), nullptr);
 }
@@ -236,6 +347,21 @@ DEFINE_TEST_BEGIN(OwnerPtrTest, Reset, FromRawPointer)
 
     TestableObject* pRaw = new TestableObject;
     EXPECT_EQ(TestableObject::Balance, 1);
+
+    obj.Reset(pRaw);
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_EQ(obj.Get(), pRaw);
+}
+DEFINE_TEST_END
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Reset, ReplaceRawPointer)
+{
+    OwnerPtr<TestableObject> obj{ new TestableObject };
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_NE(obj.Get(), nullptr);
+
+    TestableObject* pRaw = new TestableObject;
+    EXPECT_EQ(TestableObject::Balance, 2);
 
     obj.Reset(pRaw);
     EXPECT_EQ(TestableObject::Balance, 1);
@@ -293,6 +419,19 @@ DEFINE_TEST_BEGIN(OwnerPtrTest, Release, 0)
 }
 DEFINE_TEST_END
 
+DEFINE_TEST_BEGIN(OwnerPtrTest, Release, FromEmpty)
+{
+    OwnerPtr<TestableObject> obj;
+    EXPECT_EQ(TestableObject::Balance, 0);
+    EXPECT_EQ(obj.Get(), nullptr);
+
+    TestableObject* pReleased = obj.Release();
+    EXPECT_EQ(TestableObject::Balance, 0);
+    EXPECT_EQ(obj.Get(), nullptr);
+    EXPECT_EQ(pReleased, nullptr);
+}
+DEFINE_TEST_END
+
 // void Swap(OwnerPtr<VT, DT2>& other) noexcept
 
 DEFINE_TEST_BEGIN(OwnerPtrTest, Swap, 0)
@@ -329,6 +468,19 @@ DEFINE_TEST_BEGIN(OwnerPtrTest, Transfer, FromThisType)
 }
 DEFINE_TEST_END
 
+DEFINE_TEST_BEGIN(OwnerPtrTest, Transfer, FromEmpty)
+{
+    OwnerPtr<TestableObject> obj1;
+    EXPECT_EQ(TestableObject::Balance, 0);
+    EXPECT_EQ(obj1.Get(), nullptr);
+
+    OwnerPtr<TestableObject> obj2 = obj1.Transfer();
+    EXPECT_EQ(TestableObject::Balance, 0);
+    EXPECT_EQ(obj1.Get(), nullptr);
+    EXPECT_EQ(obj2.Get(), nullptr);
+}
+DEFINE_TEST_END
+
 DEFINE_TEST_BEGIN(OwnerPtrTest, Transfer, FromDerivedType)
 {
     class DerivedObject : public TestableObject
@@ -358,6 +510,19 @@ DEFINE_TEST_BEGIN(OwnerPtrTest, Cast, ToSameType)
     EXPECT_EQ(TestableObject::Balance, 1);
     EXPECT_EQ(obj1.Get(), nullptr);
     EXPECT_NE(obj2.Get(), nullptr);
+}
+DEFINE_TEST_END
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Cast, FromEmpty)
+{
+    OwnerPtr<TestableObject> obj1;
+    EXPECT_EQ(TestableObject::Balance, 0);
+    EXPECT_EQ(obj1.Get(), nullptr);
+
+    OwnerPtr<TestableObject> obj2 = obj1.Cast();
+    EXPECT_EQ(TestableObject::Balance, 0);
+    EXPECT_EQ(obj1.Get(), nullptr);
+    EXPECT_EQ(obj2.Get(), nullptr);
 }
 DEFINE_TEST_END
 
@@ -431,5 +596,54 @@ DEFINE_TEST_BEGIN(OwnerPtrTest, Cast, ToUnrelatedType)
     EXPECT_EQ(TestableObject::Balance, 0);
     EXPECT_EQ(obj1.Get(), nullptr);
     EXPECT_EQ(obj2.Get(), nullptr);
+}
+DEFINE_TEST_END
+
+// OwnerPtr comparison operators
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Comparison, OwnerPtr)
+{
+    TestableObject* pRaw1 = new TestableObject;
+    TestableObject* pRaw2 = new TestableObject;
+    EXPECT_EQ(TestableObject::Balance, 2);
+
+    OwnerPtr<TestableObject> obj1{ pRaw1 };
+    OwnerPtr<TestableObject> obj2{ pRaw2 };
+    EXPECT_EQ(TestableObject::Balance, 2);
+
+    EXPECT_EQ(obj1 == obj2, pRaw1 == pRaw2);
+    EXPECT_EQ(obj1 != obj2, pRaw1 != pRaw2);
+    EXPECT_EQ(obj1 < obj2, pRaw1 < pRaw2);
+    EXPECT_EQ(obj1 > obj2, pRaw1 > pRaw2);
+    EXPECT_EQ(obj1 <= obj2, pRaw1 <= pRaw2);
+    EXPECT_EQ(obj1 >= obj2, pRaw1 >= pRaw2);
+}
+DEFINE_TEST_END
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Comparison, NullptrOnRight)
+{
+    OwnerPtr<TestableObject> emptyObj;
+    EXPECT_EQ(TestableObject::Balance, 0);
+
+    EXPECT_EQ(emptyObj == nullptr, emptyObj.Get() == nullptr);
+    EXPECT_EQ(emptyObj != nullptr, emptyObj.Get() != nullptr);
+    EXPECT_EQ(emptyObj < nullptr, emptyObj.Get() < nullptr);
+    EXPECT_EQ(emptyObj > nullptr, emptyObj.Get() > nullptr);
+    EXPECT_EQ(emptyObj <= nullptr, emptyObj.Get() <= nullptr);
+    EXPECT_EQ(emptyObj >= nullptr, emptyObj.Get() >= nullptr);
+}
+DEFINE_TEST_END
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Comparison, NullptrOnLeft)
+{
+    OwnerPtr<TestableObject> emptyObj;
+    EXPECT_EQ(TestableObject::Balance, 0);
+
+    EXPECT_EQ(nullptr == emptyObj, nullptr == emptyObj.Get());
+    EXPECT_EQ(nullptr != emptyObj, nullptr != emptyObj.Get());
+    EXPECT_EQ(nullptr < emptyObj, nullptr < emptyObj.Get());
+    EXPECT_EQ(nullptr > emptyObj, nullptr > emptyObj.Get());
+    EXPECT_EQ(nullptr <= emptyObj, nullptr <= emptyObj.Get());
+    EXPECT_EQ(nullptr >= emptyObj, nullptr >= emptyObj.Get());
 }
 DEFINE_TEST_END
