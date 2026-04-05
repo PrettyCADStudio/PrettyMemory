@@ -114,7 +114,7 @@ namespace prtm
 
         OwnerPtr(std::nullptr_t) {}
 
-        template<typename VT2 = VT, typename DT2 = detail::DefaultDeleter<VT2>, std::enable_if_t<std::is_convertible_v<VT2*, VT*>, int> = 0>
+        template<typename VT2 = VT, typename DT2 = DT, std::enable_if_t<std::is_convertible_v<VT2*, VT*>, int> = 0>
         OwnerPtr(typename OwnerPtr<VT2, DT2>::Pointer pOther)
         {
             if (pOther)
@@ -178,7 +178,7 @@ namespace prtm
 
         void Reset(std::nullptr_t) { Destroy(); }
 
-        template<typename VT2 = VT, typename DT2 = detail::DefaultDeleter<VT2>, std::enable_if_t<std::is_convertible_v<VT2*, VT*>, int> = 0>
+        template<typename VT2 = VT, typename DT2 = DT, std::enable_if_t<std::is_convertible_v<VT2*, VT*>, int> = 0>
         void Reset(typename OwnerPtr<VT2, DT2>::Pointer pNew)
         {
             Destroy();
