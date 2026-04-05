@@ -41,11 +41,26 @@ namespace prtm
         using Reference = ValueType&;
         using ConstReference = const ValueType&;
 
+        template<typename>
+        friend class ShadowPtr;
+
+        template<typename, typename>
+        friend class OwnerPtr;
+
     public:
 
         ShadowPtr() = default;
 
         ShadowPtr(std::nullptr_t) {}
+
+        ShadowPtr(const ShadowPtr& other)
+        {
+            if (other.m_pControlBlock)
+            {
+                m_pControlBlock = other.m_pControlBlock;
+                ++m_pControlBlock->ShadowCount;
+            }
+        }
 
         template<typename T2 = T, std::enable_if_t<std::is_convertible_v<T2*, T*>, int> = 0>
         ShadowPtr(const ShadowPtr<T2>& other)
@@ -64,8 +79,7 @@ namespace prtm
             other.m_pControlBlock = nullptr;
         }
 
-        template<typename T2 = T, std::enable_if_t<std::is_convertible_v<T2*, T*>, int> = 0>
-        ShadowPtr& operator=(const ShadowPtr<T2>& other)
+        ShadowPtr& operator=(const ShadowPtr& other)
         {
             if (this != &other)
             {
@@ -80,14 +94,23 @@ namespace prtm
         }
 
         template<typename T2 = T, std::enable_if_t<std::is_convertible_v<T2*, T*>, int> = 0>
+        ShadowPtr& operator=(const ShadowPtr<T2>& other)
+        {
+            Destroy();
+            m_pControlBlock = other.m_pControlBlock;
+            if (m_pControlBlock)
+            {
+                ++m_pControlBlock->ShadowCount;
+            }
+            return *this;
+        }
+
+        template<typename T2 = T, std::enable_if_t<std::is_convertible_v<T2*, T*>, int> = 0>
         ShadowPtr& operator=(ShadowPtr<T2>&& other) noexcept
         {
-            if (this != &other)
-            {
-                Destroy();
-                m_pControlBlock = other.m_pControlBlock;
-                other.m_pControlBlock = nullptr;
-            }
+            Destroy();
+            m_pControlBlock = other.m_pControlBlock;
+            other.m_pControlBlock = nullptr;
             return *this;
         }
 
@@ -363,8 +386,8 @@ namespace prtm
                 if (0 == m_pControlBlock->ShadowCount)
                 {
                     delete m_pControlBlock;
-                    m_pControlBlock = nullptr;
                 }
+                m_pControlBlock = nullptr;
             }
             return pReleased;
         }
@@ -443,8 +466,8 @@ namespace prtm
                 if (0 == m_pControlBlock->ShadowCount)
                 {
                     delete m_pControlBlock;
-                    m_pControlBlock = nullptr;
                 }
+                m_pControlBlock = nullptr;
             }
         }
 
@@ -575,7 +598,7 @@ namespace std
     {
         std::size_t operator()(const prtm::ShadowPtr<T>& obj) const
         {
-            return std::hash<typename prtm::ShadowPtr<T>::Pointer>{}(obj.Get());
+            return std::hash<typename prtm::ShadowPtr<T>::ConstPointer>{}(obj.Get());
         }
     };
 
@@ -644,7 +667,7 @@ namespace std
     {
         std::size_t operator()(const prtm::OwnerPtr<VT, DT>& obj) const
         {
-            return std::hash<typename prtm::OwnerPtr<VT, DT>::Pointer>{}(obj.Get());
+            return std::hash<typename prtm::OwnerPtr<VT, DT>::ConstPointer>{}(obj.Get());
         }
     };
 
