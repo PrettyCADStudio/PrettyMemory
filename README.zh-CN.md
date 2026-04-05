@@ -2,6 +2,7 @@
 
 PrettyMemory 是一个小型的、仅头文件（header-only）的 C++17 内存池库。
 
+[在线 API 文档](https://prettycadstudio.github.io/PrettyMemory/)
 [English README](README.md)
 [贡献指南](CONTRIBUTING.md)
 
@@ -79,6 +80,10 @@ ctest --test-dir .\build\vs2026 -C Release --output-on-failure
 
 `include\PrettyMemory.h` 中的公开接口现在使用 Doxygen 双语注释。
 
+已发布的 GitHub Pages 在线文档地址：
+
+- <https://prettycadstudio.github.io/PrettyMemory/>
+
 生成后的文档不会显示文件的绝对路径，并且页面提供语言切换按钮，可以在中文和英文之间切换，而不是把两种语言混在一起显示。
 
 如果系统已安装 Doxygen，可以执行：
@@ -99,4 +104,3 @@ cmake --build build\docs --target docs
 - `doc\html`
 
 当修改 push 到 `main` 分支后，GitHub Actions 也会自动重新生成文档，并通过 GitHub Pages 更新网页端文档。
-
