@@ -69,6 +69,29 @@ cmake --build .\build\vs2026 --config Release
 ctest --test-dir .\build\vs2026 -C Release --output-on-failure
 ```
 
+## Generate API documentation
+
+The public interfaces in `include\PrettyMemory.h` use bilingual Doxygen comments (Chinese and English).
+
+The generated documentation does not show absolute file system paths. It also provides a language toggle button so you can switch between Chinese and English instead of seeing both languages mixed together.
+
+If Doxygen is installed, you can generate the API documentation with:
+
+```powershell
+cmake -S . -B build\docs -DBUILD_DOCS=ON
+cmake --build build\docs --target docs
+```
+
+Or simply double-click:
+
+```powershell
+.\generate-document.ps1
+```
+
+The generated HTML files are written to:
+
+- `doc\html`
+
 ## Notes
 
 - The library is currently header-only, so implementation changes usually happen in `include\PrettyMemory.h`.

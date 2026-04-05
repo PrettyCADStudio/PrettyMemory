@@ -75,3 +75,26 @@ ctest --test-dir .\build\vs2026 -C Release --output-on-failure
 - 测试工程通过 CMake `FetchContent` 集成 GoogleTest。
 - 仓库里已经包含基础的 GoogleTest 用例，并且本地脚本与 GitHub Actions CI 都会执行这些测试。
 
+## 生成接口文档
+
+`include\PrettyMemory.h` 中的公开接口现在使用 Doxygen 双语注释。
+
+生成后的文档不会显示文件的绝对路径，并且页面提供语言切换按钮，可以在中文和英文之间切换，而不是把两种语言混在一起显示。
+
+如果系统已安装 Doxygen，可以执行：
+
+```powershell
+cmake -S . -B build\docs -DBUILD_DOCS=ON
+cmake --build build\docs --target docs
+```
+
+也可以直接双击：
+
+```powershell
+.\generate-document.ps1
+```
+
+生成结果位于：
+
+- `doc\html`
+

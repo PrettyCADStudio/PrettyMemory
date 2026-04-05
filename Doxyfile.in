@@ -1,0 +1,46 @@
+PROJECT_NAME           = "PrettyMemory"
+PROJECT_NUMBER         = "@PROJECT_VERSION@"
+OUTPUT_DIRECTORY       = "@DOXYGEN_OUTPUT_DIRECTORY@"
+CREATE_SUBDIRS         = NO
+ALLOW_UNICODE_NAMES    = YES
+
+OPTIMIZE_OUTPUT_FOR_C  = NO
+OPTIMIZE_OUTPUT_JAVA   = NO
+OPTIMIZE_FOR_FORTRAN   = NO
+OPTIMIZE_OUTPUT_VHDL   = NO
+
+EXTRACT_ALL            = NO
+EXTRACT_PRIVATE        = NO
+EXTRACT_STATIC         = NO
+HIDE_UNDOC_MEMBERS     = YES
+HIDE_UNDOC_CLASSES     = YES
+
+INPUT                  = "@CMAKE_SOURCE_DIR@/include/PrettyMemory.h"
+FILE_PATTERNS          = PrettyMemory.h
+RECURSIVE              = NO
+EXCLUDE_SYMBOLS        = std prtm::detail
+FULL_PATH_NAMES        = NO
+STRIP_FROM_PATH        = "@CMAKE_SOURCE_DIR@"
+FILTER_PATTERNS        = *.h="@CMAKE_SOURCE_DIR@/doxygen-assets/comment-filter.cmd"
+
+QUIET                  = YES
+WARN_IF_UNDOCUMENTED   = NO
+WARN_IF_DOC_ERROR      = YES
+
+GENERATE_HTML          = YES
+HTML_OUTPUT            = html
+GENERATE_LATEX         = NO
+GENERATE_XML           = NO
+GENERATE_MAN           = NO
+GENERATE_RTF           = NO
+HTML_EXTRA_STYLESHEET  = "@CMAKE_SOURCE_DIR@/doxygen-assets/language-toggle.css"
+HTML_EXTRA_FILES       = "@CMAKE_SOURCE_DIR@/doxygen-assets/language-toggle.js"
+HTML_FOOTER            = "@CMAKE_SOURCE_DIR@/doxygen-assets/footer.html"
+
+JAVADOC_AUTOBRIEF      = YES
+QT_AUTOBRIEF           = YES
+MULTILINE_CPP_IS_BRIEF = NO
+MARKDOWN_SUPPORT       = YES
+INLINE_INHERITED_MEMB  = NO
+SORT_MEMBER_DOCS       = YES
+SORT_BRIEF_DOCS        = YES
