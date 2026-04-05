@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <functional>
+#include <type_traits>
 #include <utility>
 
 namespace prtm
@@ -32,6 +33,9 @@ namespace prtm
     class OwnerPtr;
 
     template<typename T>
+    class EnableShadowFromThis;
+
+    template<typename T>
     class ShadowPtr
     {
     public:
@@ -47,6 +51,9 @@ namespace prtm
 
         template<typename, typename>
         friend class OwnerPtr;
+
+        template<typename>
+        friend class EnableShadowFromThis;
 
     public:
 
@@ -276,6 +283,69 @@ namespace prtm
     {
         return nullptr >= rhs.Get();
     }
+
+    template<typename T>
+    class EnableShadowFromThis
+    {
+    public:
+
+        ShadowPtr<T> ShadowFromThis()
+        {
+            if (nullptr == m_pControlBlock)
+            {
+                m_pControlBlock = new detail::ControlBlock;
+                m_pControlBlock->Data = static_cast<T*>(this);
+            }
+
+            ShadowPtr<T> shadow;
+            shadow.m_pControlBlock = m_pControlBlock;
+            ++m_pControlBlock->ShadowCount;
+            return shadow;
+        }
+
+        ShadowPtr<const T> ShadowFromThis() const
+        {
+            if (nullptr == m_pControlBlock)
+            {
+                m_pControlBlock = new detail::ControlBlock;
+                m_pControlBlock->Data = const_cast<T*>(static_cast<const T*>(this));
+            }
+
+            ShadowPtr<T> shadow;
+            shadow.m_pControlBlock = m_pControlBlock;
+            ++m_pControlBlock->ShadowCount;
+            return shadow;
+        }
+
+    protected:
+
+        EnableShadowFromThis() = default;
+
+        EnableShadowFromThis(const EnableShadowFromThis&) {}
+
+        EnableShadowFromThis(EnableShadowFromThis&&) noexcept {}
+
+        EnableShadowFromThis& operator=(const EnableShadowFromThis&) { return *this; }
+
+        EnableShadowFromThis& operator=(EnableShadowFromThis&&) noexcept { return *this; }
+
+        ~EnableShadowFromThis()
+        {
+            if (nullptr != m_pControlBlock)
+            {
+                m_pControlBlock->Data = nullptr;
+                if (0 == m_pControlBlock->ShadowCount)
+                {
+                    delete m_pControlBlock;
+                }
+                m_pControlBlock = nullptr;
+            }
+        }
+
+    private:
+
+        mutable detail::ControlBlock* m_pControlBlock{ nullptr };
+    };
 
     template <typename VT, typename DT = detail::DefaultDeleter<VT>>
     class OwnerPtr
