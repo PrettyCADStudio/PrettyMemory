@@ -2,6 +2,7 @@
 
 PrettyMemory is a small header-only C++17 memory-pool library.
 
+[Online API documentation](https://prettycadstudio.github.io/PrettyMemory/)
 [中文说明 / Chinese README](README.zh-CN.md)
 [Contribution guide](CONTRIBUTING.md)
 
@@ -72,6 +73,10 @@ ctest --test-dir .\build\vs2026 -C Release --output-on-failure
 ## Generate API documentation
 
 The public interfaces in `include\PrettyMemory.h` use bilingual Doxygen comments (Chinese and English).
+
+The published GitHub Pages site is available at:
+
+- <https://prettycadstudio.github.io/PrettyMemory/>
 
 The generated documentation does not show absolute file system paths. It also provides a language toggle button so you can switch between Chinese and English instead of seeing both languages mixed together.
 
