@@ -253,7 +253,7 @@ DEFINE_TEST_BEGIN(ShadowPtrTest, Data, 0)
     ShadowPtr<DerivedObject> obj = owner.Shadow();
     EXPECT_EQ(TestableObject::Balance, 1);
     EXPECT_NE(obj.Data(), nullptr);
-    EXPECT_EQ(obj.Data()->Value, 42);
+    EXPECT_EQ(obj->Value, 42);
 }
 DEFINE_TEST_END
 
@@ -271,7 +271,7 @@ DEFINE_TEST_BEGIN(ShadowPtrTest, ConstData, 0)
     const ShadowPtr<DerivedObject> obj = owner.Shadow();
     EXPECT_EQ(TestableObject::Balance, 1);
     EXPECT_NE(obj.Data(), nullptr);
-    EXPECT_EQ(obj.Data()->Value, 42);
+    EXPECT_EQ(obj->Value, 42);
 }
 DEFINE_TEST_END
 
@@ -291,7 +291,7 @@ DEFINE_TEST_BEGIN(ShadowPtrTest, Arrow, 0)
     EXPECT_EQ(obj->Value, 42);
 
     obj->Value = 100;
-    EXPECT_EQ(owner.Get()->Value, 100);
+    EXPECT_EQ(owner->Value, 100);
 }
 DEFINE_TEST_END
 
@@ -328,7 +328,7 @@ DEFINE_TEST_BEGIN(ShadowPtrTest, Dereference, 0)
     EXPECT_EQ((*obj).Value, 42);
 
     (*obj).Value = 100;
-    EXPECT_EQ(owner.Get()->Value, 100);
+    EXPECT_EQ(owner->Value, 100);
 }
 DEFINE_TEST_END
 

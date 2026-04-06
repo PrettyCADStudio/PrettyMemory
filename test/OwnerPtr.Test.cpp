@@ -31,8 +31,8 @@ DEFINE_TEST_BEGIN(OwnerPtrTest, Create, ForwardMoveOnlyArgument)
     OwnerPtr<DerivedObject> obj = OwnerPtr<DerivedObject>::Create(42, std::make_unique<int>(7));
     EXPECT_EQ(TestableObject::Balance, 1);
     EXPECT_NE(obj.Get(), nullptr);
-    EXPECT_EQ(obj.Get()->Value, 42);
-    EXPECT_EQ(obj.Get()->MovedValue, 7);
+    EXPECT_EQ(obj->Value, 42);
+    EXPECT_EQ(obj->MovedValue, 7);
 }
 DEFINE_TEST_END
 
@@ -245,7 +245,7 @@ DEFINE_TEST_BEGIN(OwnerPtrTest, Data, 0)
     OwnerPtr<DerivedObject> obj{ new DerivedObject };
     EXPECT_EQ(TestableObject::Balance, 1);
     EXPECT_NE(obj.Data(), nullptr);
-    EXPECT_EQ(obj.Data()->Value, 42);
+    EXPECT_EQ(obj->Value, 42);
 }
 DEFINE_TEST_END
 
@@ -262,7 +262,42 @@ DEFINE_TEST_BEGIN(OwnerPtrTest, ConstData, 0)
     const OwnerPtr<DerivedObject> obj{ new DerivedObject };
     EXPECT_EQ(TestableObject::Balance, 1);
     EXPECT_NE(obj.Data(), nullptr);
-    EXPECT_EQ(obj.Data()->Value, 42);
+    EXPECT_EQ(obj->Value, 42);
+}
+DEFINE_TEST_END
+
+// Pointer operator->()
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Arrow, 0)
+{
+    class DerivedObject : public TestableObject
+    {
+    public:
+        int Value{ 42 };
+    };
+
+    OwnerPtr<DerivedObject> obj{ new DerivedObject };
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_EQ(obj->Value, 42);
+
+    obj->Value = 100;
+    EXPECT_EQ((*obj).Value, 100);
+}
+DEFINE_TEST_END
+
+// ConstPointer operator->() const
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, ConstArrow, 0)
+{
+    class DerivedObject : public TestableObject
+    {
+    public:
+        int Value{ 42 };
+    };
+
+    const OwnerPtr<DerivedObject> obj{ new DerivedObject };
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_EQ(obj->Value, 42);
 }
 DEFINE_TEST_END
 
@@ -281,7 +316,7 @@ DEFINE_TEST_BEGIN(OwnerPtrTest, Dereference, 0)
     EXPECT_EQ((*obj).Value, 42);
 
     (*obj).Value = 100;
-    EXPECT_EQ(obj.Get()->Value, 100);
+    EXPECT_EQ(obj->Value, 100);
 }
 DEFINE_TEST_END
 

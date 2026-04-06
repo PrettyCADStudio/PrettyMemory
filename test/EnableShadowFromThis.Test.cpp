@@ -76,7 +76,7 @@ DEFINE_TEST_BEGIN(EnableShadowFromThisTest, ShadowFromThis, ExpiresAfterOwnerRes
     EXPECT_EQ(TestableObject::Balance, 1);
     EXPECT_NE(owner.Get(), nullptr);
 
-    ShadowPtr<ShadowableObject> shadow = owner.Get()->MakeShadow();
+    ShadowPtr<ShadowableObject> shadow = owner->MakeShadow();
     EXPECT_NE(shadow.Get(), nullptr);
     EXPECT_EQ(shadow.Get(), owner.Get());
     EXPECT_FALSE(shadow.Expired());

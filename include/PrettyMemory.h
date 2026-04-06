@@ -556,6 +556,12 @@ namespace prtm
         /** @brief Dereference to obtain the const managed object. */
         ConstReference operator*() const { return *Get(); }
 
+        /** @brief Access the managed object through operator->. */
+        Pointer operator->() { return Get(); }
+
+        /** @brief Const access to the managed object through operator->. */
+        ConstPointer operator->() const { return Get(); }
+
         /** @brief Check whether this OwnerPtr currently owns an object. */
         operator bool() const { return nullptr != Get(); }
 
