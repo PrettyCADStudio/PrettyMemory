@@ -18,7 +18,6 @@ option(BUILD_DOCS "Build API documentation with Doxygen" OFF)
 
 if(BUILD_DOCS)
     find_package(Doxygen REQUIRED)
-    find_package(Python3 REQUIRED COMPONENTS Interpreter)
 
     set(DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/doc" CACHE PATH "Output directory for generated API documentation")
     configure_file(

@@ -18,7 +18,6 @@ All public implementation lives in `include\PrettyMemory.h`.
 
 - `include\PrettyMemory.h`: public API and header-only implementation
 - `test\`: GoogleTest-based unit tests
-- `doxygen-assets\`: Doxygen filter and assets for bilingual documentation
 - `.github\workflows\ci.yml`: Windows CI build and test workflow
 - `.github\workflows\deploy-docs.yml`: GitHub Pages documentation deployment workflow
 
@@ -26,7 +25,7 @@ All public implementation lives in `include\PrettyMemory.h`.
 
 - C++17 compiler
 - CMake 3.15 or newer
-- For local API docs generation: Doxygen and Python 3
+- For local API docs generation: Doxygen
 
 The repository includes helper scripts for Visual Studio 2022 and Visual Studio 2026 on Windows, but standard CMake commands also work directly.
 
@@ -82,7 +81,7 @@ Build the preferred generated solution in `Release` mode and run all tests:
 
 ## Generate API documentation
 
-`include\PrettyMemory.h` contains bilingual Doxygen comments written with `@~english` and `@~chinese`. During generation, a Python filter converts them into switchable language blocks in the HTML output.
+`include\PrettyMemory.h` contains the Doxygen comments used to generate the published API reference.
 
 Generate the documentation locally with:
 
@@ -104,7 +103,6 @@ Generated HTML is written to:
 The generated site:
 
 - does not expose absolute local file system paths
-- includes a Chinese / English language toggle
 
 ## GitHub Actions and Pages
 

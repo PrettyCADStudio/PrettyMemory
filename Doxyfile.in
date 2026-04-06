@@ -21,7 +21,6 @@ RECURSIVE              = NO
 EXCLUDE_SYMBOLS        = std prtm::detail
 FULL_PATH_NAMES        = NO
 STRIP_FROM_PATH        = "@CMAKE_SOURCE_DIR@"
-FILTER_PATTERNS        = *.h="@Python3_EXECUTABLE@ @CMAKE_SOURCE_DIR@/doxygen-assets/comment_filter.py"
 
 QUIET                  = YES
 WARN_IF_UNDOCUMENTED   = NO
@@ -33,9 +32,6 @@ GENERATE_LATEX         = NO
 GENERATE_XML           = NO
 GENERATE_MAN           = NO
 GENERATE_RTF           = NO
-HTML_EXTRA_STYLESHEET  = "@CMAKE_SOURCE_DIR@/doxygen-assets/language-toggle.css"
-HTML_EXTRA_FILES       = "@CMAKE_SOURCE_DIR@/doxygen-assets/language-toggle.js"
-HTML_FOOTER            = "@CMAKE_SOURCE_DIR@/doxygen-assets/footer.html"
 
 JAVADOC_AUTOBRIEF      = YES
 QT_AUTOBRIEF           = YES
