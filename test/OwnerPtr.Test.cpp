@@ -167,6 +167,22 @@ DEFINE_TEST_BEGIN(OwnerPtrTest, Assignment, Move)
 }
 DEFINE_TEST_END
 
+DEFINE_TEST_BEGIN(OwnerPtrTest, Assignment, MoveReplaceExisting)
+{
+    OwnerPtr<TestableObject> opObj1{ new TestableObject };
+    OwnerPtr<TestableObject> opObj2{ new TestableObject };
+    EXPECT_EQ(TestableObject::Balance, 2);
+    EXPECT_NE(opObj1.Get(), nullptr);
+    EXPECT_NE(opObj2.Get(), nullptr);
+
+    TestableObject* pExpected = opObj1.Get();
+    opObj2 = std::move(opObj1);
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_EQ(opObj1.Get(), nullptr);
+    EXPECT_EQ(opObj2.Get(), pExpected);
+}
+DEFINE_TEST_END
+
 DEFINE_TEST_BEGIN(OwnerPtrTest, Assignment, MoveNullptr)
 {
     OwnerPtr<TestableObject> opObj1{ nullptr };
@@ -219,6 +235,20 @@ DEFINE_TEST_BEGIN(OwnerPtrTest, Assignment, MoveFromDerived)
     EXPECT_EQ(TestableObject::Balance, 1);
     EXPECT_EQ(opObj1.Get(), nullptr);
     EXPECT_NE(opObj2.Get(), nullptr);
+}
+DEFINE_TEST_END
+
+DEFINE_TEST_BEGIN(OwnerPtrTest, Assignment, MoveSelf)
+{
+    OwnerPtr<TestableObject> obj{ new TestableObject };
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_NE(obj.Get(), nullptr);
+
+    TestableObject* pExpected = obj.Get();
+    OwnerPtr<TestableObject>& self = obj;
+    obj = std::move(self);
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_EQ(obj.Get(), pExpected);
 }
 DEFINE_TEST_END
 

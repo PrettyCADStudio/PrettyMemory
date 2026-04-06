@@ -145,6 +145,25 @@ DEFINE_TEST_BEGIN(ShadowPtrTest, Assignment, Copy)
 }
 DEFINE_TEST_END
 
+DEFINE_TEST_BEGIN(ShadowPtrTest, Assignment, CopyReplaceExisting)
+{
+    OwnerPtr<TestableObject> owner1{ new TestableObject };
+    OwnerPtr<TestableObject> owner2{ new TestableObject };
+    ShadowPtr<TestableObject> obj1 = owner1.Shadow();
+    ShadowPtr<TestableObject> obj2 = owner2.Shadow();
+    EXPECT_EQ(TestableObject::Balance, 2);
+    EXPECT_EQ(owner1.ShadowCount(), 1);
+    EXPECT_EQ(owner2.ShadowCount(), 1);
+
+    obj2 = obj1;
+    EXPECT_EQ(TestableObject::Balance, 2);
+    EXPECT_EQ(obj2.Get(), obj1.Get());
+    EXPECT_EQ(owner1.ShadowCount(), 2);
+    EXPECT_EQ(owner2.ShadowCount(), 0);
+    EXPECT_EQ(obj2.ShadowCount(), 2);
+}
+DEFINE_TEST_END
+
 DEFINE_TEST_BEGIN(ShadowPtrTest, Assignment, CopyFromEmpty)
 {
     ShadowPtr<TestableObject> obj1;
@@ -178,6 +197,21 @@ DEFINE_TEST_BEGIN(ShadowPtrTest, Assignment, CopyFromDerived)
 }
 DEFINE_TEST_END
 
+DEFINE_TEST_BEGIN(ShadowPtrTest, Assignment, CopySelf)
+{
+    OwnerPtr<TestableObject> owner{ new TestableObject };
+    ShadowPtr<TestableObject> obj = owner.Shadow();
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_EQ(owner.ShadowCount(), 1);
+
+    obj = obj;
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_FALSE(obj.IsNull());
+    EXPECT_EQ(owner.ShadowCount(), 1);
+    EXPECT_EQ(obj.ShadowCount(), 1);
+}
+DEFINE_TEST_END
+
 // ShadowPtr& operator=(ShadowPtr<T2>&& other) noexcept
 
 DEFINE_TEST_BEGIN(ShadowPtrTest, Assignment, Move)
@@ -193,6 +227,27 @@ DEFINE_TEST_BEGIN(ShadowPtrTest, Assignment, Move)
     EXPECT_EQ(obj1.Get(), nullptr);
     EXPECT_NE(obj2.Get(), nullptr);
     EXPECT_EQ(owner.ShadowCount(), 1);
+}
+DEFINE_TEST_END
+
+DEFINE_TEST_BEGIN(ShadowPtrTest, Assignment, MoveReplaceExisting)
+{
+    OwnerPtr<TestableObject> owner1{ new TestableObject };
+    OwnerPtr<TestableObject> owner2{ new TestableObject };
+    ShadowPtr<TestableObject> obj1 = owner1.Shadow();
+    ShadowPtr<TestableObject> obj2 = owner2.Shadow();
+    EXPECT_EQ(TestableObject::Balance, 2);
+    EXPECT_EQ(owner1.ShadowCount(), 1);
+    EXPECT_EQ(owner2.ShadowCount(), 1);
+
+    obj2 = std::move(obj1);
+    EXPECT_EQ(TestableObject::Balance, 2);
+    EXPECT_EQ(obj1.Get(), nullptr);
+    EXPECT_NE(obj2.Get(), nullptr);
+    EXPECT_EQ(obj2.Get(), owner1.Get());
+    EXPECT_EQ(owner1.ShadowCount(), 1);
+    EXPECT_EQ(owner2.ShadowCount(), 0);
+    EXPECT_EQ(obj2.ShadowCount(), 1);
 }
 DEFINE_TEST_END
 
@@ -226,6 +281,23 @@ DEFINE_TEST_BEGIN(ShadowPtrTest, Assignment, MoveFromDerived)
     EXPECT_EQ(obj1.Get(), nullptr);
     EXPECT_NE(obj2.Get(), nullptr);
     EXPECT_EQ(owner.ShadowCount(), 1);
+}
+DEFINE_TEST_END
+
+DEFINE_TEST_BEGIN(ShadowPtrTest, Assignment, MoveSelf)
+{
+    OwnerPtr<TestableObject> owner{ new TestableObject };
+    ShadowPtr<TestableObject> obj = owner.Shadow();
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_EQ(owner.ShadowCount(), 1);
+
+    ShadowPtr<TestableObject>& self = obj;
+    obj = std::move(self);
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_FALSE(obj.IsNull());
+    EXPECT_EQ(obj.Get(), owner.Get());
+    EXPECT_EQ(owner.ShadowCount(), 1);
+    EXPECT_EQ(obj.ShadowCount(), 1);
 }
 DEFINE_TEST_END
 

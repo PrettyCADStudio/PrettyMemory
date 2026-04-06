@@ -139,11 +139,30 @@ namespace prtm
         template<typename T2 = T, std::enable_if_t<std::is_convertible_v<T2*, T*>, int> = 0>
         ShadowPtr& operator=(const ShadowPtr<T2>& other)
         {
-            Destroy();
-            m_pControlBlock = other.m_pControlBlock;
-            if (m_pControlBlock)
+            if (static_cast<const void*>(this) != static_cast<const void*>(&other))
             {
-                ++m_pControlBlock->ShadowCount;
+                Destroy();
+                m_pControlBlock = other.m_pControlBlock;
+                if (m_pControlBlock)
+                {
+                    ++m_pControlBlock->ShadowCount;
+                }
+            }
+            return *this;
+        }
+
+        /**
+         * @brief Move-assign from a ShadowPtr of the same type.
+         * @param other Source ShadowPtr.
+         * @return Reference to this object.
+         */
+        ShadowPtr& operator=(ShadowPtr&& other) noexcept
+        {
+            if (this != &other)
+            {
+                Destroy();
+                m_pControlBlock = other.m_pControlBlock;
+                other.m_pControlBlock = nullptr;
             }
             return *this;
         }
@@ -157,9 +176,12 @@ namespace prtm
         template<typename T2 = T, std::enable_if_t<std::is_convertible_v<T2*, T*>, int> = 0>
         ShadowPtr& operator=(ShadowPtr<T2>&& other) noexcept
         {
-            Destroy();
-            m_pControlBlock = other.m_pControlBlock;
-            other.m_pControlBlock = nullptr;
+            if (static_cast<const void*>(this) != static_cast<const void*>(&other))
+            {
+                Destroy();
+                m_pControlBlock = other.m_pControlBlock;
+                other.m_pControlBlock = nullptr;
+            }
             return *this;
         }
 
@@ -523,7 +545,7 @@ namespace prtm
         template<typename VT2 = VT, typename DT2 = detail::DefaultDeleter<VT2>, std::enable_if_t<std::is_convertible_v<VT2*, VT*>, int> = 0>
         OwnerPtr& operator=(OwnerPtr<VT2, DT2>&& other) noexcept
         {
-            if (this != &other)
+            if (static_cast<const void*>(this) != static_cast<const void*>(&other))
             {
                 Destroy();
                 m_pControlBlock = other.m_pControlBlock;
