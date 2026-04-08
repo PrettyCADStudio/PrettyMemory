@@ -79,6 +79,7 @@ namespace prtm
         {
             if (other.m_pControlBlock)
             {
+                m_pTyped = other.m_pTyped;
                 m_pControlBlock = other.m_pControlBlock;
                 ++m_pControlBlock->ShadowCount;
             }
@@ -94,6 +95,7 @@ namespace prtm
         {
             if (other.m_pControlBlock)
             {
+                m_pTyped = other.m_pTyped;
                 m_pControlBlock = other.m_pControlBlock;
                 ++m_pControlBlock->ShadowCount;
             }
@@ -107,7 +109,9 @@ namespace prtm
         template<typename T2 = T, std::enable_if_t<std::is_convertible_v<T2*, T*>, int> = 0>
         ShadowPtr(ShadowPtr<T2>&& other) noexcept
         {
+            m_pTyped = other.m_pTyped;
             m_pControlBlock = other.m_pControlBlock;
+            other.m_pTyped = nullptr;
             other.m_pControlBlock = nullptr;
         }
 
@@ -121,6 +125,7 @@ namespace prtm
             if (this != &other)
             {
                 Destroy();
+                m_pTyped = other.m_pTyped;
                 m_pControlBlock = other.m_pControlBlock;
                 if (m_pControlBlock)
                 {
@@ -142,6 +147,7 @@ namespace prtm
             if (static_cast<const void*>(this) != static_cast<const void*>(&other))
             {
                 Destroy();
+                m_pTyped = other.m_pTyped;
                 m_pControlBlock = other.m_pControlBlock;
                 if (m_pControlBlock)
                 {
@@ -161,7 +167,9 @@ namespace prtm
             if (this != &other)
             {
                 Destroy();
+                m_pTyped = other.m_pTyped;
                 m_pControlBlock = other.m_pControlBlock;
+                other.m_pTyped = nullptr;
                 other.m_pControlBlock = nullptr;
             }
             return *this;
@@ -179,7 +187,9 @@ namespace prtm
             if (static_cast<const void*>(this) != static_cast<const void*>(&other))
             {
                 Destroy();
+                m_pTyped = other.m_pTyped;
                 m_pControlBlock = other.m_pControlBlock;
+                other.m_pTyped = nullptr;
                 other.m_pControlBlock = nullptr;
             }
             return *this;
@@ -192,10 +202,10 @@ namespace prtm
         std::size_t ShadowCount() const { return m_pControlBlock ? m_pControlBlock->ShadowCount : 0; }
 
         /** @brief Get the writable raw pointer, or nullptr if the object has expired. */
-        Pointer Get() { return m_pControlBlock ? static_cast<Pointer>(m_pControlBlock->Data) : nullptr; }
+        Pointer Get() { return (m_pControlBlock && m_pControlBlock->Data) ? m_pTyped : nullptr; }
 
         /** @brief Get the const raw pointer, or nullptr if the object has expired. */
-        ConstPointer Get() const { return m_pControlBlock ? static_cast<ConstPointer>(m_pControlBlock->Data) : nullptr; }
+        ConstPointer Get() const { return (m_pControlBlock && m_pControlBlock->Data) ? m_pTyped : nullptr; }
 
         /** @brief Get the writable data pointer. */
         Pointer Data() { return Get(); }
@@ -230,6 +240,7 @@ namespace prtm
          */
         void Swap(ShadowPtr& other) noexcept
         {
+            std::swap(m_pTyped, other.m_pTyped);
             std::swap(m_pControlBlock, other.m_pControlBlock);
         }
 
@@ -249,10 +260,12 @@ namespace prtm
                 }
                 m_pControlBlock = nullptr;
             }
+            m_pTyped = nullptr;
         }
 
     private:
 
+        Pointer m_pTyped{ nullptr };
         detail::ControlBlock* m_pControlBlock{ nullptr };
     };
 
@@ -316,28 +329,28 @@ namespace prtm
     template<typename T>
     bool operator<(const ShadowPtr<T>& lhs, std::nullptr_t)
     {
-        return lhs.Get() < nullptr;
+        return lhs.Get() < static_cast<typename ShadowPtr<T>::ConstPointer>(nullptr);
     }
 
     /** @brief Compare a ShadowPtr with nullptr by raw pointer address. */
     template<typename T>
     bool operator<=(const ShadowPtr<T>& lhs, std::nullptr_t)
     {
-        return lhs.Get() <= nullptr;
+        return lhs.Get() <= static_cast<typename ShadowPtr<T>::ConstPointer>(nullptr);
     }
 
     /** @brief Compare a ShadowPtr with nullptr by raw pointer address. */
     template<typename T>
     bool operator>(const ShadowPtr<T>& lhs, std::nullptr_t)
     {
-        return lhs.Get() > nullptr;
+        return lhs.Get() > static_cast<typename ShadowPtr<T>::ConstPointer>(nullptr);
     }
 
     /** @brief Compare a ShadowPtr with nullptr by raw pointer address. */
     template<typename T>
     bool operator>=(const ShadowPtr<T>& lhs, std::nullptr_t)
     {
-        return lhs.Get() >= nullptr;
+        return lhs.Get() >= static_cast<typename ShadowPtr<T>::ConstPointer>(nullptr);
     }
 
     /** @brief Compare nullptr with a ShadowPtr. */
@@ -358,28 +371,28 @@ namespace prtm
     template<typename T>
     bool operator<(std::nullptr_t, const ShadowPtr<T>& rhs)
     {
-        return nullptr < rhs.Get();
+        return static_cast<typename ShadowPtr<T>::ConstPointer>(nullptr) < rhs.Get();
     }
 
     /** @brief Compare nullptr with a ShadowPtr by raw pointer address. */
     template<typename T>
     bool operator<=(std::nullptr_t, const ShadowPtr<T>& rhs)
     {
-        return nullptr <= rhs.Get();
+        return static_cast<typename ShadowPtr<T>::ConstPointer>(nullptr) <= rhs.Get();
     }
 
     /** @brief Compare nullptr with a ShadowPtr by raw pointer address. */
     template<typename T>
     bool operator>(std::nullptr_t, const ShadowPtr<T>& rhs)
     {
-        return nullptr > rhs.Get();
+        return static_cast<typename ShadowPtr<T>::ConstPointer>(nullptr) > rhs.Get();
     }
 
     /** @brief Compare nullptr with a ShadowPtr by raw pointer address. */
     template<typename T>
     bool operator>=(std::nullptr_t, const ShadowPtr<T>& rhs)
     {
-        return nullptr >= rhs.Get();
+        return static_cast<typename ShadowPtr<T>::ConstPointer>(nullptr) >= rhs.Get();
     }
 
     /**
@@ -401,6 +414,7 @@ namespace prtm
             }
 
             ShadowPtr<T> shadow;
+            shadow.m_pTyped = static_cast<T*>(this);
             shadow.m_pControlBlock = m_pControlBlock;
             ++m_pControlBlock->ShadowCount;
             return shadow;
@@ -416,6 +430,7 @@ namespace prtm
             }
 
             ShadowPtr<T> shadow;
+            shadow.m_pTyped = const_cast<T*>(static_cast<const T*>(this));
             shadow.m_pControlBlock = m_pControlBlock;
             ++m_pControlBlock->ShadowCount;
             return shadow;
@@ -467,7 +482,6 @@ namespace prtm
         using ConstPointer = const ValueType*;
         using Reference = ValueType&;
         using ConstReference = const ValueType&;
-        using DeleterType = DT;
 
         template<typename>
         friend class ShadowPtr;
@@ -508,6 +522,7 @@ namespace prtm
         {
             if (pOther)
             {
+                m_pTyped = pOther;
                 m_pControlBlock = new detail::ControlBlock;
                 m_pControlBlock->Data = pOther;
                 m_pControlBlock->Deleter = DT2{};
@@ -531,7 +546,9 @@ namespace prtm
         template<typename VT2 = VT, typename DT2 = detail::DefaultDeleter<VT2>, std::enable_if_t<std::is_convertible_v<VT2*, VT*>, int> = 0>
         OwnerPtr(OwnerPtr<VT2, DT2>&& other) noexcept
         {
+            m_pTyped = other.m_pTyped;
             m_pControlBlock = other.m_pControlBlock;
+            other.m_pTyped = nullptr;
             other.m_pControlBlock = nullptr;
         }
 
@@ -548,7 +565,9 @@ namespace prtm
             if (static_cast<const void*>(this) != static_cast<const void*>(&other))
             {
                 Destroy();
+                m_pTyped = other.m_pTyped;
                 m_pControlBlock = other.m_pControlBlock;
+                other.m_pTyped = nullptr;
                 other.m_pControlBlock = nullptr;
             }
             return *this;
@@ -561,10 +580,10 @@ namespace prtm
         std::size_t ShadowCount() const { return m_pControlBlock ? m_pControlBlock->ShadowCount : 0; }
 
         /** @brief Get the writable raw pointer. */
-        Pointer Get() { return m_pControlBlock ? static_cast<Pointer>(m_pControlBlock->Data) : nullptr; }
+        Pointer Get() { return m_pTyped; }
 
         /** @brief Get the const raw pointer. */
-        ConstPointer Get() const { return m_pControlBlock ? static_cast<ConstPointer>(m_pControlBlock->Data) : nullptr; }
+        ConstPointer Get() const { return m_pTyped; }
 
         /** @brief Get the writable data pointer. */
         Pointer Data() { return Get(); }
@@ -611,6 +630,7 @@ namespace prtm
             Destroy();
             if (nullptr != pNew)
             {
+                m_pTyped = pNew;
                 m_pControlBlock = new detail::ControlBlock;
                 m_pControlBlock->Data = pNew;
                 m_pControlBlock->Deleter = DT2{};
@@ -620,7 +640,7 @@ namespace prtm
         /** @brief Release ownership and return the raw pointer. */
         [[nodiscard]] Pointer Release()
         {
-            Pointer pReleased = Get();
+            Pointer pReleased = m_pTyped;
             if (m_pControlBlock)
             {
                 m_pControlBlock->Data = nullptr;
@@ -630,6 +650,7 @@ namespace prtm
                 }
                 m_pControlBlock = nullptr;
             }
+            m_pTyped = nullptr;
             return pReleased;
         }
 
@@ -641,6 +662,7 @@ namespace prtm
         template<typename DT2 = DT>
         void Swap(OwnerPtr<VT, DT2>& other) noexcept
         {
+            std::swap(m_pTyped, other.m_pTyped);
             std::swap(m_pControlBlock, other.m_pControlBlock);
         }
 
@@ -656,7 +678,9 @@ namespace prtm
             OwnerPtr<VT2, DT2> transferred;
             if (m_pControlBlock)
             {
+                transferred.m_pTyped = m_pTyped;
                 transferred.m_pControlBlock = m_pControlBlock;
+                m_pTyped = nullptr;
                 m_pControlBlock = nullptr;
             }
             return transferred;
@@ -672,11 +696,12 @@ namespace prtm
         [[nodiscard]] OwnerPtr<VT2, DT2> Cast()
         {
             OwnerPtr<VT2, DT2> casted;
-            Pointer pCurrent = Get();
-            typename OwnerPtr<VT2, DT2>::Pointer pCasted = dynamic_cast<typename OwnerPtr<VT2, DT2>::Pointer>(pCurrent);
+            typename OwnerPtr<VT2, DT2>::Pointer pCasted = dynamic_cast<typename OwnerPtr<VT2, DT2>::Pointer>(m_pTyped);
             if (pCasted)
             {
+                casted.m_pTyped = pCasted;
                 casted.m_pControlBlock = m_pControlBlock;
+                m_pTyped = nullptr;
                 m_pControlBlock = nullptr;
             }
             else
@@ -697,6 +722,7 @@ namespace prtm
             ShadowPtr<VT2> shadow;
             if (m_pControlBlock)
             {
+                shadow.m_pTyped = m_pTyped;
                 shadow.m_pControlBlock = m_pControlBlock;
                 ++m_pControlBlock->ShadowCount;
             }
@@ -714,6 +740,7 @@ namespace prtm
             ShadowPtr<VT2> shadow;
             if (m_pControlBlock)
             {
+                shadow.m_pTyped = m_pTyped;
                 shadow.m_pControlBlock = m_pControlBlock;
                 ++m_pControlBlock->ShadowCount;
             }
@@ -737,10 +764,12 @@ namespace prtm
                 }
                 m_pControlBlock = nullptr;
             }
+            m_pTyped = nullptr;
         }
 
     private:
 
+        Pointer m_pTyped{ nullptr };
         detail::ControlBlock* m_pControlBlock{ nullptr };
     };
 
@@ -804,28 +833,28 @@ namespace prtm
     template<typename VT, typename DT = detail::DefaultDeleter<VT>>
     bool operator<(const OwnerPtr<VT, DT>& lhs, std::nullptr_t)
     {
-        return lhs.Get() < nullptr;
+        return lhs.Get() < static_cast<typename OwnerPtr<VT, DT>::ConstPointer>(nullptr);
     }
 
     /** @brief Compare an OwnerPtr with nullptr by raw pointer address. */
     template<typename VT, typename DT = detail::DefaultDeleter<VT>>
     bool operator>(const OwnerPtr<VT, DT>& lhs, std::nullptr_t)
     {
-        return lhs.Get() > nullptr;
+        return lhs.Get() > static_cast<typename OwnerPtr<VT, DT>::ConstPointer>(nullptr);
     }
 
     /** @brief Compare an OwnerPtr with nullptr by raw pointer address. */
     template<typename VT, typename DT = detail::DefaultDeleter<VT>>
     bool operator<=(const OwnerPtr<VT, DT>& lhs, std::nullptr_t)
     {
-        return lhs.Get() <= nullptr;
+        return lhs.Get() <= static_cast<typename OwnerPtr<VT, DT>::ConstPointer>(nullptr);
     }
 
     /** @brief Compare an OwnerPtr with nullptr by raw pointer address. */
     template<typename VT, typename DT = detail::DefaultDeleter<VT>>
     bool operator>=(const OwnerPtr<VT, DT>& lhs, std::nullptr_t)
     {
-        return lhs.Get() >= nullptr;
+        return lhs.Get() >= static_cast<typename OwnerPtr<VT, DT>::ConstPointer>(nullptr);
     }
 
     /** @brief Compare nullptr with an OwnerPtr. */
@@ -846,28 +875,28 @@ namespace prtm
     template<typename VT, typename DT = detail::DefaultDeleter<VT>>
     bool operator<(std::nullptr_t, const OwnerPtr<VT, DT>& rhs)
     {
-        return nullptr < rhs.Get();
+        return static_cast<typename OwnerPtr<VT, DT>::ConstPointer>(nullptr) < rhs.Get();
     }
 
     /** @brief Compare nullptr with an OwnerPtr by raw pointer address. */
     template<typename VT, typename DT = detail::DefaultDeleter<VT>>
     bool operator>(std::nullptr_t, const OwnerPtr<VT, DT>& rhs)
     {
-        return nullptr > rhs.Get();
+        return static_cast<typename OwnerPtr<VT, DT>::ConstPointer>(nullptr) > rhs.Get();
     }
 
     /** @brief Compare nullptr with an OwnerPtr by raw pointer address. */
     template<typename VT, typename DT = detail::DefaultDeleter<VT>>
     bool operator<=(std::nullptr_t, const OwnerPtr<VT, DT>& rhs)
     {
-        return nullptr <= rhs.Get();
+        return static_cast<typename OwnerPtr<VT, DT>::ConstPointer>(nullptr) <= rhs.Get();
     }
 
     /** @brief Compare nullptr with an OwnerPtr by raw pointer address. */
     template<typename VT, typename DT = detail::DefaultDeleter<VT>>
     bool operator>=(std::nullptr_t, const OwnerPtr<VT, DT>& rhs)
     {
-        return nullptr >= rhs.Get();
+        return static_cast<typename OwnerPtr<VT, DT>::ConstPointer>(nullptr) >= rhs.Get();
     }
 }
 
