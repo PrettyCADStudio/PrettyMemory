@@ -214,7 +214,7 @@ namespace prtm
         ConstPointer Data() const { return Get(); }
 
         /** @brief Check whether this ShadowPtr points to a live object. */
-        operator bool() const { return nullptr != Get(); }
+        explicit operator bool() const { return nullptr != Get(); }
 
         /** @brief Check whether the referenced object has expired. */
         bool Expired() const { return nullptr == Get(); }
@@ -604,7 +604,7 @@ namespace prtm
         ConstPointer operator->() const { return Get(); }
 
         /** @brief Check whether this OwnerPtr currently owns an object. */
-        operator bool() const { return nullptr != Get(); }
+        explicit operator bool() const { return nullptr != Get(); }
 
         /** @brief Check whether this OwnerPtr is null. */
         bool IsNull() const { return nullptr == Get(); }
