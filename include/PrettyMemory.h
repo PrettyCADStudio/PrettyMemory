@@ -244,6 +244,28 @@ namespace prtm
             std::swap(m_pControlBlock, other.m_pControlBlock);
         }
 
+        /**
+         * @brief Cast the observed object type with dynamic_cast while keeping this ShadowPtr unchanged.
+         * @tparam VT2 Target object type.
+         * @return Casted ShadowPtr sharing the same control block, or an empty pointer if the cast fails or the object has expired.
+         */
+        template<typename VT2>
+        [[nodiscard]] ShadowPtr<VT2> Cast() const
+        {
+            ShadowPtr<VT2> casted;
+            if (m_pControlBlock && m_pControlBlock->Data)
+            {
+                typename ShadowPtr<VT2>::Pointer pCasted = dynamic_cast<typename ShadowPtr<VT2>::Pointer>(m_pTyped);
+                if (pCasted)
+                {
+                    casted.m_pTyped = pCasted;
+                    casted.m_pControlBlock = m_pControlBlock;
+                    ++casted.m_pControlBlock->ShadowCount;
+                }
+            }
+            return casted;
+        }
+
     private:
 
         void Destroy()

@@ -498,6 +498,100 @@ DEFINE_TEST_BEGIN(ShadowPtrTest, Swap, 0)
 }
 DEFINE_TEST_END
 
+// [[nodiscard]] ShadowPtr<VT2> Cast() const
+
+DEFINE_TEST_BEGIN(ShadowPtrTest, Cast, ToSameType)
+{
+    OwnerPtr<TestableObject> owner{ new TestableObject };
+    ShadowPtr<TestableObject> shadow = owner.Shadow();
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_EQ(owner.ShadowCount(), 1);
+
+    ShadowPtr<TestableObject> casted = shadow.Cast<TestableObject>();
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_EQ(shadow.Get(), owner.Get());
+    EXPECT_EQ(casted.Get(), owner.Get());
+    EXPECT_EQ(owner.ShadowCount(), 2);
+    EXPECT_EQ(shadow.ShadowCount(), 2);
+    EXPECT_EQ(casted.ShadowCount(), 2);
+}
+DEFINE_TEST_END
+
+DEFINE_TEST_BEGIN(ShadowPtrTest, Cast, Offset)
+{
+    class BaseObject
+    {
+    public:
+        explicit BaseObject(int value) : m_value(value) {}
+        virtual ~BaseObject() = default;
+        int GetValue() const { return m_value; }
+    private:
+        int m_value{ 0 };
+    };
+
+    class DerivedObject : public BaseObject, public TestableObject
+    {
+    public:
+        explicit DerivedObject(int value) : BaseObject{ value } {}
+    };
+
+    OwnerPtr<DerivedObject> owner = OwnerPtr<DerivedObject>::Create(42);
+    ShadowPtr<TestableObject> shadow = owner.Shadow<TestableObject>();
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_EQ(owner.ShadowCount(), 1);
+
+    ShadowPtr<BaseObject> casted = shadow.Cast<BaseObject>();
+    EXPECT_NE(casted.Get(), nullptr);
+    EXPECT_EQ(casted->GetValue(), 42);
+    EXPECT_EQ(owner.ShadowCount(), 2);
+    EXPECT_EQ(shadow.ShadowCount(), 2);
+    EXPECT_EQ(casted.ShadowCount(), 2);
+}
+DEFINE_TEST_END
+
+DEFINE_TEST_BEGIN(ShadowPtrTest, Cast, ToUnrelatedType)
+{
+    class UnrelatedObject
+    {
+    public:
+        virtual ~UnrelatedObject() = default;
+    };
+
+    OwnerPtr<TestableObject> owner{ new TestableObject };
+    ShadowPtr<TestableObject> shadow = owner.Shadow();
+    EXPECT_EQ(TestableObject::Balance, 1);
+    EXPECT_EQ(owner.ShadowCount(), 1);
+
+    ShadowPtr<UnrelatedObject> casted = shadow.Cast<UnrelatedObject>();
+    EXPECT_EQ(casted.Get(), nullptr);
+    EXPECT_EQ(owner.ShadowCount(), 1);
+    EXPECT_EQ(shadow.ShadowCount(), 1);
+}
+DEFINE_TEST_END
+
+DEFINE_TEST_BEGIN(ShadowPtrTest, Cast, FromExpired)
+{
+    ShadowPtr<TestableObject> shadow;
+    EXPECT_EQ(TestableObject::Balance, 0);
+
+    {
+        OwnerPtr<TestableObject> owner{ new TestableObject };
+        shadow = owner.Shadow();
+        EXPECT_EQ(TestableObject::Balance, 1);
+        EXPECT_EQ(owner.ShadowCount(), 1);
+    }
+
+    EXPECT_TRUE(shadow.Expired());
+    EXPECT_EQ(shadow.ShadowCount(), 1);
+
+    ShadowPtr<TestableObject> casted = shadow.Cast<TestableObject>();
+    EXPECT_EQ(casted.Get(), nullptr);
+    EXPECT_EQ(casted.ShadowCount(), 0);
+    EXPECT_EQ(shadow.Get(), nullptr);
+    EXPECT_EQ(shadow.ShadowCount(), 1);
+}
+DEFINE_TEST_END
+
 // OwnerPtr::Shadow()
 
 DEFINE_TEST_BEGIN(ShadowPtrTest, Shadow, FromOwner)
