@@ -432,11 +432,12 @@ namespace prtm
             if (nullptr == m_pControlBlock)
             {
                 m_pControlBlock = new detail::ControlBlock;
-                m_pControlBlock->Data = static_cast<T*>(this);
+                m_pControlBlock->Data = static_cast<void*>(this);
+                m_pControlBlock->Deleter = detail::DefaultDeleter<T>{};
             }
 
             ShadowPtr<T> shadow;
-            shadow.m_pTyped = static_cast<T*>(this);
+            shadow.m_pTyped = dynamic_cast<T*>(this);
             shadow.m_pControlBlock = m_pControlBlock;
             ++m_pControlBlock->ShadowCount;
             return shadow;
@@ -470,7 +471,7 @@ namespace prtm
 
         EnableShadowFromThis& operator=(EnableShadowFromThis&&) noexcept { return *this; }
 
-        ~EnableShadowFromThis()
+        virtual ~EnableShadowFromThis()
         {
             if (nullptr != m_pControlBlock)
             {
