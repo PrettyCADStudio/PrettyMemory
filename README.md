@@ -2,7 +2,7 @@
 
 PrettyMemory is a header-only C++17 smart pointer library focused on explicit ownership and safe observation.
 
-[Online API documentation](https://prettycadstudio.github.io/PrettyMemory/)
+[Online API documentation](doc/html/index.html)
 [中文说明 / Chinese README](README.zh-CN.md)
 [Contribution guide](CONTRIBUTING.md)
 

@@ -1,0 +1,27 @@
+var classprtm_1_1_shadow_ptr =
+[
+    [ "ShadowPtr", "classprtm_1_1_shadow_ptr.html#a9ed87184863fb00d8367c41d568babbc", null ],
+    [ "ShadowPtr", "classprtm_1_1_shadow_ptr.html#a1aa0ac90f88a2b63f43f477e5a4c7a37", null ],
+    [ "ShadowPtr", "classprtm_1_1_shadow_ptr.html#a40a116e73507e0d14883fd79dc1c7a95", null ],
+    [ "ShadowPtr", "classprtm_1_1_shadow_ptr.html#a3edec69ac0871c1841d6c7854cf080d8", null ],
+    [ "ShadowPtr", "classprtm_1_1_shadow_ptr.html#aafb48a20875d05e690f27f3ca6407066", null ],
+    [ "~ShadowPtr", "classprtm_1_1_shadow_ptr.html#a21708792c55eb32725e2cfd5f6f96404", null ],
+    [ "Cast", "classprtm_1_1_shadow_ptr.html#aa6b0e1ecd78d3961899c783bee36bcba", null ],
+    [ "Data", "classprtm_1_1_shadow_ptr.html#a00035989c6fdacdb5d615d2861597871", null ],
+    [ "Data", "classprtm_1_1_shadow_ptr.html#a6cfa928b0b6d2ada465c8b0ae75d5904", null ],
+    [ "Expired", "classprtm_1_1_shadow_ptr.html#a9830dbf1cee3d0f39c16e5b20c837dfe", null ],
+    [ "Get", "classprtm_1_1_shadow_ptr.html#ad8039c74a2e352c4068c23061c4eb72e", null ],
+    [ "Get", "classprtm_1_1_shadow_ptr.html#ae0a1729589c65c0dd092ea133df769fa", null ],
+    [ "IsNull", "classprtm_1_1_shadow_ptr.html#a2c241f6690e99e801761818a2db20ce8", null ],
+    [ "operator bool", "classprtm_1_1_shadow_ptr.html#a719b799e36f0cbfa46b9293a7117ca09", null ],
+    [ "operator*", "classprtm_1_1_shadow_ptr.html#af42ccba168b60318e4e35e0174a20916", null ],
+    [ "operator*", "classprtm_1_1_shadow_ptr.html#a06cb4bffab05fc681cdef0aea874b97f", null ],
+    [ "operator->", "classprtm_1_1_shadow_ptr.html#ad1ebf7a963b82e5b08022bcda2c6cbc7", null ],
+    [ "operator->", "classprtm_1_1_shadow_ptr.html#a09782edffec4c5afc585927988fe8e47", null ],
+    [ "operator=", "classprtm_1_1_shadow_ptr.html#ada1bde03cee242b0737fb7bc0df65531", null ],
+    [ "operator=", "classprtm_1_1_shadow_ptr.html#afab86efd8f0d88414aaf7aca8752992c", null ],
+    [ "operator=", "classprtm_1_1_shadow_ptr.html#a57a2a28e9a5df0dc8813734d50546c65", null ],
+    [ "operator=", "classprtm_1_1_shadow_ptr.html#ac41afcbfb1537069e4f298f0e29e8626", null ],
+    [ "ShadowCount", "classprtm_1_1_shadow_ptr.html#ad5365777cc9a4cfeb7a8595761f934d2", null ],
+    [ "Swap", "classprtm_1_1_shadow_ptr.html#a315d7d8ed4106622bb381cca66c330a6", null ]
+];

@@ -2,7 +2,7 @@
 
 PrettyMemory 是一个仅头文件（header-only）的 C++17 智能指针库，重点提供显式所有权管理和安全的观察能力。
 
-[在线 API 文档](https://prettycadstudio.github.io/PrettyMemory/)
+[在线 API 文档](doc/html/index.html)
 [English README](README.md)
 [贡献指南](CONTRIBUTING.md)
 

@@ -14,9 +14,7 @@
 
 # Generated build trees and outputs
 /build/
-/build-docs/
 /bin/
-/doc/
 
 # Visual Studio generated and user-specific files
 /.vs/
