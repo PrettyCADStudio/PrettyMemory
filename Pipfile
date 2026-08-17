@@ -1,0 +1,29 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+
+[dev-packages]
+
+[requires]
+python_version = "3.13"
+
+[scripts]
+clean = "python scripts/clean.py"
+mksln = "python scripts/make_solution.py"
+mksln17 = "python scripts/make_solution.py --std 17"
+mksln20 = "python scripts/make_solution.py --std 20"
+start = "python scripts/start.py"
+build = "python scripts/build.py"
+build_debug = "python scripts/build.py --config Debug"
+build_release = "python scripts/build.py --config Release"
+build_rel_deb = "python scripts/build.py --config RelWithDebInfo"
+build_min_rel = "python scripts/build.py --config MinSizeRel"
+test = "python scripts/test.py"
+test_debug = "python scripts/test.py --config Debug"
+test_release = "python scripts/test.py --config Release"
+test_rel_deb = "python scripts/test.py --config RelWithDebInfo"
+test_min_rel = "python scripts/test.py --config MinSizeRel"
+doc = "python scripts/doc.py"

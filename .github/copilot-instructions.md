@@ -7,53 +7,67 @@ Use CMake from the repository root:
 ```powershell
 cmake -S . -B build
 cmake --build build
-```
-
-Run the full test suite with:
-
-```powershell
 ctest --test-dir build --output-on-failure
 ```
 
-List discovered tests with:
+Run a single test by name pattern:
+
+```powershell
+ctest --test-dir build -R ShadowPtrTest --output-on-failure
+```
+
+List discovered tests without running:
 
 ```powershell
 ctest --test-dir build -N
 ```
 
-Run a single discovered test with:
-
-```powershell
-ctest --test-dir build -R <test-name> --output-on-failure
-```
-
-After building on Windows with the default Visual Studio generator, you can also run a single GoogleTest case directly:
+After building with the Visual Studio generator, you can also run a single GoogleTest case directly:
 
 ```powershell
 .\bin\Debug\PrettyMemoryTests.exe --gtest_filter=SuiteName.TestName
 ```
 
-The test harness is wired up through GoogleTest and `test\test_main.cpp` contains the repository's current basic tests. When adding coverage, prefer extending that target instead of creating a second test executable.
+Pipenv helper scripts are also available (default config is `RelWithDebInfo`, not Release):
 
-## High-level architecture
+```powershell
+pipenv run build              # configure + build
+pipenv run test               # run tests
+pipenv run clean              # remove build/, bin/, .vs/, .idea/
+```
 
-This repository is a very small header-only C++17 library. The implementation currently lives entirely in `include\PrettyMemory.h` under the `PrettyMemory` namespace, with no separate `src\` directory or compiled library target in the top-level build.
+CI builds in Release with `-G "Visual Studio 17 2022" -A x64`.
 
-The public API is centered on `PrettyMemory::MemoryPool`, which manages fixed-size blocks through an intrusive free list. When the free list is empty, `allocate()` grows the pool in batches of 32 blocks, rewires the linked free list inside that newly allocated region, and then returns blocks by popping from the list. `deallocate()` pushes blocks back onto the same list.
+## Architecture
 
-The top-level `CMakeLists.txt` only sets the C++ standard, output directories, and the `BUILD_TESTS` option. When tests are enabled, it delegates to `test\CMakeLists.txt`, which wraps the header-only library as an `INTERFACE` target named `PrettyMemory`, fetches GoogleTest with `FetchContent`, builds `PrettyMemoryTests`, and registers tests with `gtest_discover_tests()`.
+Header-only C++17 smart pointer library. The entire implementation lives in `include/PrettyMemory.h`. There is no `src/` directory or compiled library target.
 
-Build outputs are intentionally split: the main executable output directory is `bin\`, while intermediate build products and fetched dependencies stay under `build\`.
+Public API (namespace `prtm`):
+- `OwnerPtr<T, Deleter>` — owning smart pointer, move-only, custom deleter support, `Create`, `Transfer`, `Cast`, `Shadow`
+- `ShadowPtr<T>` — non-owning observer that detects when the target is destroyed; `Get`, `Expired`, `Cast`, `Swap`
+- `EnableShadowFromThis<T>` — CRTP base for creating `ShadowPtr` from `this` via `ShadowFromThis()`
 
-## Key conventions
+Internal implementation lives in `prtm::detail` (`ControlBlock`, `DefaultDeleter`).
 
-Keep library implementation inline in headers unless the repository structure changes intentionally. New public functionality should usually be added in `include\PrettyMemory.h` and consumed from tests through the existing include path instead of introducing a parallel source layout ad hoc.
+The top-level `CMakeLists.txt` sets the C++ standard, output directories, and the `BUILD_TESTS` option. When tests are enabled it delegates to `test/CMakeLists.txt`, which defines an `INTERFACE` target named `PrettyMemory`, fetches GoogleTest v1.14.0 with `FetchContent`, builds `PrettyMemoryTests`, and registers tests with `gtest_discover_tests()`.
 
-Match the current C++ conventions:
+Build outputs: executables go to `bin/`, intermediate files and fetched dependencies stay under `build/`.
 
-- Use the `PrettyMemory` namespace for public types.
-- Prefer standard library headers only; the library itself currently has no third-party runtime dependencies.
-- Use classic include guards (`#ifndef` / `#define` / `#endif`) rather than `#pragma once`.
-- Keep the project on C++17; both the root project and the tests explicitly require it.
+## Test structure
 
-Preserve the current testing pattern when adding coverage: test code lives under `test\`, links against the `PrettyMemory` `INTERFACE` target, and relies on GoogleTest discovery through CMake instead of hand-maintained test registration.
+All test sources under `test/` compile into a single `PrettyMemoryTests` executable. Test files: `OwnerPtr.Test.cpp`, `ShadowPtr.Test.cpp`, `EnableShadowFromThis.Test.cpp`, `ControlBlock.Test.cpp`, `CountableObject.Test.cpp`, `Deleter.Test.cpp`.
+
+Custom test macros in `test/PrettyMemoryTest.h`:
+- `DEFINE_TEST_BEGIN(SuiteName, TestName, Subject)` / `DEFINE_TEST_END` — wraps GoogleTest with automatic leak checking via `CountableObject::Balance`. Every test MUST end with `DEFINE_TEST_END`.
+- `CountableObject<T>` (in `test/CountableObject.h`) — tracks construction/destruction counts. Use as the test type to verify no leaks.
+
+Do not use raw `TEST()` macros. Always use the `DEFINE_TEST_BEGIN`/`DEFINE_TEST_END` pattern.
+
+## Code conventions
+
+- Namespace: `prtm` (public), `prtm::detail` (internal). NOT `PrettyMemory`.
+- The header uses `#pragma once`.
+- Standard library only — no third-party runtime dependencies.
+- C++17 is the default; overridable via `-DCXX_STD=N`.
+- MSVC gets `/utf-8` flag automatically.
+- Keep library implementation inline in headers. New functionality goes in `include/PrettyMemory.h`.

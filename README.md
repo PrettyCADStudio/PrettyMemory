@@ -1,37 +1,24 @@
 # PrettyMemory
 
-PrettyMemory is a header-only C++17 smart pointer library focused on explicit ownership and safe observation.
+Header-only C++17 smart pointer library with explicit ownership and safe observation.
 
-[Online API documentation](doc/html/index.html)
-[中文说明 / Chinese README](README.zh-CN.md)
-[Contribution guide](CONTRIBUTING.md)
+[API documentation](doc/html/index.html) | [中文说明](README.zh-CN.md) | [Contributing](CONTRIBUTING.md)
 
-## What it provides
+## Types
 
-- `prtm::OwnerPtr<T, Deleter>`: owning smart pointer with move-only ownership, custom deleter support, `Create`, `Transfer`, `Cast`, and `Shadow`.
-- `prtm::ShadowPtr<T>`: non-owning observing pointer that becomes invalid after the target object is destroyed or released.
-- `prtm::EnableShadowFromThis<T>`: base class that lets an object create `ShadowPtr` instances from `this`.
+All public types live in namespace `prtm`. Implementation details are in `prtm::detail`.
 
-All public implementation lives in `include\PrettyMemory.h`.
+| Type | Description |
+|------|-------------|
+| `OwnerPtr<T, Deleter>` | Owning smart pointer. Move-only. Supports custom deleters. |
+| `ShadowPtr<T>` | Non-owning observer. Detects when the target object is destroyed. |
+| `EnableShadowFromThis<T>` | CRTP base. Lets an object create `ShadowPtr` from `this`. |
 
-## Project layout
+The entire implementation lives in `include/PrettyMemory.h`.
 
-- `include\PrettyMemory.h`: public API and header-only implementation
-- `test\`: GoogleTest-based unit tests
-- `.github\workflows\ci.yml`: Windows CI build and test workflow
-- `.github\workflows\deploy-docs.yml`: GitHub Pages documentation deployment workflow
+## Build and test
 
-## Requirements
-
-- C++17 compiler
-- CMake 3.15 or newer
-- For local API docs generation: Doxygen
-
-The repository includes helper scripts for Visual Studio 2022 and Visual Studio 2026 on Windows, but standard CMake commands also work directly.
-
-## Build and run tests
-
-Recommended manual workflow from the repository root:
+Requires: CMake 3.28+, C++17 compiler.
 
 ```powershell
 cmake -S . -B build
@@ -39,77 +26,58 @@ cmake --build build
 ctest --test-dir build --output-on-failure
 ```
 
-To inspect discovered tests without running them:
+Run a single test by name pattern:
+
+```powershell
+ctest --test-dir build -R ShadowPtrTest --output-on-failure
+```
+
+List discovered tests without running:
 
 ```powershell
 ctest --test-dir build -N
 ```
 
-To run a single discovered test:
+### Pipenv scripts (Windows)
+
+Python helper scripts wrap CMake. Default build config is `RelWithDebInfo`:
 
 ```powershell
-ctest --test-dir build -R ShadowPtrTest
+pipenv run build              # configure + build (RelWithDebInfo)
+pipenv run test               # run tests
+pipenv run build_release      # build Release
+pipenv run test_release       # test Release
+pipenv run clean              # remove build/, bin/, .vs/, .idea/
+pipenv run doc                # generate Doxygen docs
 ```
 
-## Windows helper scripts
-
-Generate a Visual Studio 2022 solution:
-
-```powershell
-.\make-solution-vs-2022.ps1
-```
-
-Generate a Visual Studio 2026 solution:
-
-```powershell
-.\make-solution-vs-2026.ps1
-```
-
-Open the preferred generated solution:
-
-```powershell
-.\start-with-visual-studio.ps1
-```
-
-Build the preferred generated solution in `Release` mode and run all tests:
-
-```powershell
-.\build-and-run-tests.ps1
-```
-
-`start-with-visual-studio.ps1` and `build-and-run-tests.ps1` prefer `build\vs2026` and fall back to `build\vs2022`.
+CI builds in Release with `-G "Visual Studio 17 2022" -A x64`.
 
 ## Generate API documentation
 
-`include\PrettyMemory.h` contains the Doxygen comments used to generate the published API reference.
-
-Generate the documentation locally with:
+Doxygen generates the API reference from comments in `include/PrettyMemory.h`.
 
 ```powershell
 cmake -S . -B build\docs -DBUILD_DOCS=ON
 cmake --build build\docs --target docs
 ```
 
-Or use the Windows helper script:
+Or use the helper script:
 
 ```powershell
-.\generate-document.ps1
+pipenv run doc
 ```
 
-Generated HTML is written to:
+Output goes to `doc/html`. The generated site does not expose absolute local file paths.
 
-- `doc\html`
+## Project layout
 
-The generated site:
-
-- does not expose absolute local file system paths
-
-## GitHub Actions and Pages
-
-- `.github\workflows\ci.yml` builds and tests the project on Windows for pushes to `main` and `master`, and for pull requests.
-- `.github\workflows\deploy-docs.yml` regenerates documentation on pushes to `main` and deploys it to GitHub Pages.
-
-If this repository is being configured for Pages for the first time, set **Settings > Pages > Source** to **GitHub Actions**.
+```
+include/PrettyMemory.h    public API and header-only implementation
+test/                     GoogleTest-based unit tests (one file per type)
+CMakeLists.txt            top-level build: C++ standard, output dirs, BUILD_TESTS option
+Pipfile                   Python helper scripts for build/test/clean/doc
+```
 
 ## Example
 
@@ -129,3 +97,10 @@ owner.Reset();
 
 bool expired = shadow.Expired();
 ```
+
+## CI and Pages
+
+- `.github/workflows/ci.yml` — builds and tests on Windows for pushes to `main`/`master` and pull requests.
+- `.github/workflows/deploy-docs.yml` — regenerates docs on push to `main`, deploys to GitHub Pages.
+
+First-time Pages setup: set **Settings > Pages > Source** to **GitHub Actions**.
