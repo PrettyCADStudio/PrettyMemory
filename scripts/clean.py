@@ -12,6 +12,9 @@ directories_to_remove = [
     repo_dir / ".idea",
     repo_dir / ".vs"
 ]
+for directory in repo_dir.iterdir():
+    if directory.is_dir() and directory.name.startswith("cmake-build-"):
+        directories_to_remove.append(directory)
 for directory in directories_to_remove:
     if directory.is_dir():
         print(f'Removing directory: {directory}')

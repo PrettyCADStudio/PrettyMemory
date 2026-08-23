@@ -28,3 +28,9 @@
 *.log
 *.tmp
 *.temp
+
+# PyCharm
+.idea/
+
+# CLion
+cmake-build-*/

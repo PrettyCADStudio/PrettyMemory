@@ -1,11 +1,12 @@
 # coding: utf-8
 
+import sys
 import subprocess
 
-from pretty_memory import get_solution_file, get_vs_path, path_to_string
+from pretty_memory import get_solution_file, get_vs_path, path_to_string, get_cmake_file
 
 
-def main():
+def main_windows():
     vs_path = get_vs_path()
     if vs_path is None:
         print(f"Visual Studio path was not found")
@@ -24,5 +25,17 @@ def main():
     subprocess.Popen(cmd)
 
 
+def main_linux():
+    cmake_file = get_cmake_file()
+    cmd = [
+        'clion',
+        path_to_string(cmake_file)
+    ]
+    subprocess.Popen(cmd)
+
+
 if __name__ == "__main__":
-    main()
+    if sys.platform == "Windows":
+        main_windows()
+    else:
+        main_linux()

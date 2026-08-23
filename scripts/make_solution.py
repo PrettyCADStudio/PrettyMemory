@@ -1,8 +1,9 @@
 # coding: utf-8
 
+import sys
 from argparse import ArgumentParser
 
-from pretty_memory import get_source_dir, get_build_dir, path_to_string, run_command
+from pretty_memory import get_source_dir, get_build_dir, path_to_string, run_command, get_cmake_generator
 
 
 parser = ArgumentParser()
@@ -15,12 +16,18 @@ if args.std is not None:
 
 source_dir = get_source_dir()
 build_dir = get_build_dir()
+cmake_generator = get_cmake_generator()
 cmd = [
     'cmake',
-    '-G', 'Visual Studio 18 2026',
-    '-A', 'x64',
+    '-G', cmake_generator,
     '-S', path_to_string(source_dir),
     '-B', path_to_string(build_dir),
     f'-DCXX_STD={std}'
 ]
+if sys.platform == "Windows":
+    cmd.append('-A')
+    cmd.append('x64')
+else:
+    cmd.append("-DCMAKE_C_COMPILER=/usr/bin/gcc")
+    cmd.append("-DCMAKE_CXX_COMPILER=/usr/bin/g++")
 run_command(cmd)
