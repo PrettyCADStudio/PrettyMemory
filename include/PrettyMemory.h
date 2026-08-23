@@ -8,6 +8,7 @@
 #include <functional>
 #include <type_traits>
 #include <utility>
+#include <version>
 
 #if defined(_MSVC_LANG)
 #define PRTM_CXX_STANDARD _MSVC_LANG
@@ -25,6 +26,16 @@
 #define PRTM_HAS_CONCEPTS 1
 #else
 #define PRTM_HAS_CONCEPTS 0
+#endif
+
+#if PRTM_HAS_CPP20 && defined(__cpp_lib_three_way_comparison) && __cpp_lib_three_way_comparison >= 201907L
+#define PRTM_HAS_THREE_WAY_COMPARISON 1
+#else
+#define PRTM_HAS_THREE_WAY_COMPARISON 0
+#endif
+
+#if PRTM_HAS_THREE_WAY_COMPARISON
+#include <compare>
 #endif
 
 namespace prtm
@@ -335,6 +346,16 @@ namespace prtm
         return lhs.Get() == rhs.Get();
     }
 
+#if PRTM_HAS_THREE_WAY_COMPARISON
+
+    template<typename T>
+    auto operator<=>(const ShadowPtr<T>& lhs, const ShadowPtr<T>& rhs)
+    {
+        return lhs.Get() <=> rhs.Get();
+    }
+
+#else
+
     /** @brief Compare whether two ShadowPtr objects point to different objects. */
     template<typename T>
     bool operator!=(const ShadowPtr<T>& lhs, const ShadowPtr<T>& rhs)
@@ -370,12 +391,25 @@ namespace prtm
         return lhs.Get() >= rhs.Get();
     }
 
+#endif
+
     /** @brief Compare a ShadowPtr with nullptr. */
     template<typename T>
     bool operator==(const ShadowPtr<T>& lhs, std::nullptr_t)
     {
         return lhs.Get() == nullptr;
     }
+
+#if PRTM_HAS_THREE_WAY_COMPARISON
+
+    template<typename T>
+    auto operator<=>(const ShadowPtr<T>& lhs, std::nullptr_t)
+    {
+        T* right{ nullptr };
+        return lhs.Get() <=> right;
+    }
+
+#else
 
     /** @brief Compare a ShadowPtr with nullptr. */
     template<typename T>
@@ -412,12 +446,26 @@ namespace prtm
         return lhs.Get() >= static_cast<typename ShadowPtr<T>::ConstPointer>(nullptr);
     }
 
+#endif
+
     /** @brief Compare nullptr with a ShadowPtr. */
     template<typename T>
     bool operator==(std::nullptr_t, const ShadowPtr<T>& rhs)
     {
         return nullptr == rhs.Get();
     }
+
+#if PRTM_HAS_THREE_WAY_COMPARISON
+
+    /** @brief Compare nullptr with a ShadowPtr. */
+    template<typename T>
+    auto operator<=>(std::nullptr_t, const ShadowPtr<T>& rhs)
+    {
+        T* left{ nullptr };
+        return left <=> rhs.Get();
+    }
+
+#else
 
     /** @brief Compare nullptr with a ShadowPtr. */
     template<typename T>
@@ -453,6 +501,8 @@ namespace prtm
     {
         return static_cast<typename ShadowPtr<T>::ConstPointer>(nullptr) >= rhs.Get();
     }
+
+#endif
 
     /**
      * @brief Enables a class to create ShadowPtr instances from this.
@@ -880,6 +930,16 @@ namespace prtm
         return lhs.Get() == rhs.Get();
     }
 
+#if PRTM_HAS_THREE_WAY_COMPARISON
+
+    template<typename VT, typename DT1 = detail::DefaultDeleter<VT>, typename DT2 = detail::DefaultDeleter<VT>>
+    auto operator<=>(const OwnerPtr<VT, DT1>& lhs, const OwnerPtr<VT, DT2>& rhs)
+    {
+        return lhs.Get() <=> rhs.Get();
+    }
+
+#else
+
     /** @brief Compare whether two OwnerPtr objects point to different objects. */
     template<typename VT, typename DT1 = detail::DefaultDeleter<VT>, typename DT2 = detail::DefaultDeleter<VT>>
     bool operator!=(const OwnerPtr<VT, DT1>& lhs, const OwnerPtr<VT, DT2>& rhs)
@@ -915,12 +975,25 @@ namespace prtm
         return lhs.Get() >= rhs.Get();
     }
 
+#endif
+
     /** @brief Compare an OwnerPtr with nullptr. */
     template<typename VT, typename DT = detail::DefaultDeleter<VT>>
     bool operator==(const OwnerPtr<VT, DT>& lhs, std::nullptr_t)
     {
         return lhs.Get() == nullptr;
     }
+
+#if PRTM_HAS_THREE_WAY_COMPARISON
+
+    template<typename VT, typename DT = detail::DefaultDeleter<VT>>
+    auto operator<=>(const OwnerPtr<VT, DT>& lhs, std::nullptr_t)
+    {
+        VT* right{ nullptr };
+        return lhs.Get() <=> right;
+    }
+
+#else
 
     /** @brief Compare an OwnerPtr with nullptr. */
     template<typename VT, typename DT = detail::DefaultDeleter<VT>>
@@ -957,12 +1030,25 @@ namespace prtm
         return lhs.Get() >= static_cast<typename OwnerPtr<VT, DT>::ConstPointer>(nullptr);
     }
 
+#endif
+
     /** @brief Compare nullptr with an OwnerPtr. */
     template<typename VT, typename DT = detail::DefaultDeleter<VT>>
     bool operator==(std::nullptr_t, const OwnerPtr<VT, DT>& rhs)
     {
         return nullptr == rhs.Get();
     }
+
+#if PRTM_HAS_THREE_WAY_COMPARISON
+
+    template<typename VT, typename DT = detail::DefaultDeleter<VT>>
+    auto operator<=>(std::nullptr_t, const OwnerPtr<VT, DT>& rhs)
+    {
+        VT* left{ nullptr };
+        return left <=> rhs.Get();
+    }
+
+#else
 
     /** @brief Compare nullptr with an OwnerPtr. */
     template<typename VT, typename DT = detail::DefaultDeleter<VT>>
@@ -998,6 +1084,8 @@ namespace prtm
     {
         return static_cast<typename OwnerPtr<VT, DT>::ConstPointer>(nullptr) >= rhs.Get();
     }
+
+#endif
 }
 
 namespace std
