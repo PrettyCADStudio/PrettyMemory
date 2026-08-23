@@ -1,6 +1,41 @@
-﻿/**
+/**
  * @file PrettyMemory.h
- * @brief Public API and header-only implementation for PrettyMemory.
+ * @brief Header-only C++17 smart pointer library with non-owning observer support.
+ *
+ * This library provides two smart pointer types that share a common control block:
+ * - OwnerPtr<T>       — owning pointer, move-only, manages object lifetime.
+ * - ShadowPtr<T>      — non-owning observer, detects when the target is destroyed.
+ *
+ * A class can derive from EnableShadowFromThis<T> (CRTP) to allow creating
+ * ShadowPtr instances directly from @c this.
+ *
+ * All types live in namespace @c prtm. Internal helpers are in @c prtm::detail.
+ *
+ * @par Quick example
+ * @code
+ * #include <PrettyMemory.h>
+ *
+ * struct Widget : prtm::EnableShadowFromThis<Widget> {
+ *     int value = 42;
+ * };
+ *
+ * auto owner = prtm::OwnerPtr<Widget>::Create();
+ * auto shadow = owner->ShadowFromThis();
+ *
+ * assert(shadow->value == 42);
+ * assert(!shadow.Expired());
+ *
+ * owner.Reset();
+ * assert(shadow.Expired());
+ * @endcode
+ *
+ * @par Thread safety
+ * ControlBlock::ShadowCount is @em not atomic. Concurrent mutation of the same
+ * OwnerPtr / ShadowPtr group from multiple threads requires external synchronisation.
+ *
+ * @par Requirements
+ * - C++17 or later (C++20 concepts used when available).
+ * - No third-party dependencies; standard library only.
  */
 #pragma once
 
@@ -42,13 +77,23 @@ namespace prtm
 {
     namespace detail
     {
+        /**
+         * @brief Shared control block linking an OwnerPtr to its ShadowPtr observers.
+         *
+         * Allocated on the heap when an OwnerPtr is created. Destroyed when both
+         * the owning pointer and all shadow pointers have released it.
+         */
         struct ControlBlock
         {
-            void* Data{ nullptr };
-            std::function<void(void*)> Deleter{ nullptr };
-            std::size_t ShadowCount{ 0 };
+            void* Data{ nullptr };                        ///< Managed object pointer (nullptr after OwnerPtr releases or destroys).
+            std::function<void(void*)> Deleter{ nullptr }; ///< Type-erased deleter invoked by OwnerPtr.
+            std::size_t ShadowCount{ 0 };                 ///< Number of live ShadowPtr instances referencing this block.
         };
 
+        /**
+         * @brief Default deleter that calls @c delete on a typed pointer.
+         * @tparam T Object type.
+         */
         template <typename T>
         struct DefaultDeleter
         {
@@ -69,8 +114,21 @@ namespace prtm
     class EnableShadowFromThis;
 
     /**
-     * @brief Non-owning shadow pointer used to observe whether an object is still alive.
+     * @brief Non-owning observer pointer that detects when the target object is destroyed.
      * @tparam T Pointed-to object type.
+     *
+     * A ShadowPtr does @em not extend the lifetime of the observed object.  When the
+     * owning OwnerPtr (or EnableShadowFromThis host) destroys or releases the object,
+     * subsequent calls to Get(), Expired(), operator->(), and operator*() reflect the
+     * expired state:
+     * - Get() returns @c nullptr.
+     * - Expired() returns @c true.
+     * - operator bool() returns @c false.
+     *
+     * ShadowPtr is copyable and movable.  Copying increments the control block's
+     * shadow count; moving transfers ownership of the reference without touching the count.
+     *
+     * @see OwnerPtr, EnableShadowFromThis
      */
     template<typename T>
     class ShadowPtr
@@ -246,7 +304,10 @@ namespace prtm
         /** @brief Destroy this ShadowPtr. */
         ~ShadowPtr() { Destroy(); }
 
-        /** @brief Get the number of ShadowPtr instances sharing the control block. */
+        /**
+         * @brief Get the number of ShadowPtr instances sharing this control block.
+         * @return The current shadow count, or 0 if this ShadowPtr is empty.
+         */
         std::size_t ShadowCount() const { return m_pControlBlock ? m_pControlBlock->ShadowCount : 0; }
 
         /** @brief Get the writable raw pointer, or nullptr if the object has expired. */
@@ -293,9 +354,12 @@ namespace prtm
         }
 
         /**
-         * @brief Cast the observed object type with dynamic_cast while keeping this ShadowPtr unchanged.
+         * @brief Cast the observed object to another type using dynamic_cast.
          * @tparam VT2 Target object type.
-         * @return Casted ShadowPtr sharing the same control block, or an empty pointer if the cast fails or the object has expired.
+         * @return A new ShadowPtr<VT2> sharing the same control block.
+         *
+         * If the dynamic_cast fails or the object has expired, an empty ShadowPtr
+         * is returned.  The original ShadowPtr is not modified.
          */
         template<typename VT2>
         [[nodiscard]] ShadowPtr<VT2> Cast() const
@@ -505,15 +569,34 @@ namespace prtm
 #endif
 
     /**
-     * @brief Enables a class to create ShadowPtr instances from this.
-     * @tparam T Derived class type.
+     * @brief CRTP base class that enables creating ShadowPtr instances from @c this.
+     * @tparam T Derived class type (the CRTP parameter).
+     *
+     * Derive your class from EnableShadowFromThis<YourClass> and call
+     * ShadowFromThis() to obtain a ShadowPtr that observes the current instance.
+     *
+     * The control block is lazily allocated on the first call to ShadowFromThis()
+     * and automatically invalidated when the derived object is destroyed.
+     *
+     * @note The derived class must be owned by an OwnerPtr or otherwise have a
+     *       well-defined lifetime.  Do not destroy the object while ShadowPtr
+     *       instances created via ShadowFromThis() are still in use from another
+     *       thread without external synchronisation.
+     *
+     * @see ShadowPtr, OwnerPtr::Shadow()
      */
     template<typename T>
     class EnableShadowFromThis
     {
     public:
 
-        /** @brief Create a ShadowPtr that references the current object. */
+        /**
+         * @brief Create a ShadowPtr that observes this object.
+         * @return A ShadowPtr<T> sharing a control block with this object.
+         *
+         * The control block is allocated on first call.  Subsequent calls reuse
+         * the same block, incrementing the shadow count each time.
+         */
         ShadowPtr<T> ShadowFromThis()
         {
             if (nullptr == m_pControlBlock)
@@ -530,7 +613,10 @@ namespace prtm
             return shadow;
         }
 
-        /** @brief Create a const ShadowPtr that references the current object. */
+        /**
+         * @brief Create a const ShadowPtr that observes this object.
+         * @return A ShadowPtr<const T> sharing a control block with this object.
+         */
         ShadowPtr<const T> ShadowFromThis() const
         {
             if (nullptr == m_pControlBlock)
@@ -577,9 +663,21 @@ namespace prtm
     };
 
     /**
-     * @brief Owning smart pointer that manages an object's lifetime.
+     * @brief Owning smart pointer that manages an object's lifetime and supports ShadowPtr observers.
      * @tparam VT Object type.
-     * @tparam DT Deleter type.
+     * @tparam DT Deleter type.  Must be callable with @c void*. Defaults to DefaultDeleter<VT>.
+     *
+     * OwnerPtr is move-only (copy is deleted).  Moving transfers both the managed
+     * pointer and the control block to the new OwnerPtr.
+     *
+     * Use the static factory Create() to construct an OwnerPtr in-place, or
+     * construct from a raw pointer / nullptr.
+     *
+     * When the OwnerPtr is destroyed or reset, it invokes the deleter on the
+     * managed object and sets the control block's Data pointer to @c nullptr.
+     * Existing ShadowPtr instances then report Expired() == @c true.
+     *
+     * @see ShadowPtr, EnableShadowFromThis
      */
     template <typename VT, typename DT = detail::DefaultDeleter<VT>>
     class OwnerPtr
@@ -602,10 +700,12 @@ namespace prtm
     public:
 
         /**
-         * @brief Construct an object in place and return an OwnerPtr.
-         * @tparam ArgTypes Constructor argument types.
-         * @param args Arguments forwarded to the object constructor.
+         * @brief Construct an object in place and return an OwnerPtr managing it.
+         * @tparam ArgTypes Constructor argument types (deduced).
+         * @param args Arguments forwarded to the VT constructor.
          * @return OwnerPtr managing the newly created object.
+         *
+         * Equivalent to @c new VT{args...} wrapped in an OwnerPtr.
          */
 #if PRTM_HAS_CONCEPTS
         template<typename... ArgTypes>
@@ -706,7 +806,10 @@ namespace prtm
         /** @brief Destroy this OwnerPtr and delete the managed object when needed. */
         ~OwnerPtr() { Destroy(); }
 
-        /** @brief Get the number of ShadowPtr instances associated with this object. */
+        /**
+         * @brief Get the number of ShadowPtr instances observing the managed object.
+         * @return The current shadow count, or 0 if this OwnerPtr is empty.
+         */
         std::size_t ShadowCount() const { return m_pControlBlock ? m_pControlBlock->ShadowCount : 0; }
 
         /** @brief Get the writable raw pointer. */
@@ -739,20 +842,23 @@ namespace prtm
         /** @brief Check whether this OwnerPtr is null. */
         bool IsNull() const { return nullptr == Get(); }
 
-        /** @brief Release ownership of the current object and reset this pointer to null. */
+        /** @brief Destroy the managed object and reset this pointer to empty. */
         void Nullify() { Destroy(); }
 
-        /** @brief Reset this OwnerPtr to empty. */
+        /** @brief Destroy the managed object and reset this pointer to empty. */
         void Reset() { Destroy(); }
 
-        /** @brief Reset this OwnerPtr to empty using nullptr. */
+        /** @brief Destroy the managed object and reset this pointer to empty. */
         void Reset(std::nullptr_t) { Destroy(); }
 
         /**
-         * @brief Take ownership of a new raw pointer.
-         * @tparam VT2 Source object type.
-         * @tparam DT2 Source deleter type.
-         * @param pNew New raw pointer.
+         * @brief Replace the managed object with a new raw pointer.
+         * @tparam VT2 New object type (must be convertible to VT).
+         * @tparam DT2 Deleter type for the new object.
+         * @param pNew New raw pointer to take ownership of.  May be nullptr.
+         *
+         * The previously managed object (if any) is destroyed before the new
+         * pointer is adopted.
          */
 #if PRTM_HAS_CONCEPTS
         template<typename VT2 = VT, typename DT2 = DT>
@@ -772,7 +878,13 @@ namespace prtm
             }
         }
 
-        /** @brief Release ownership and return the raw pointer. */
+        /**
+         * @brief Release ownership of the managed object and return the raw pointer.
+         * @return The raw pointer to the formerly managed object.
+         *
+         * The caller is responsible for eventually deleting the returned pointer.
+         * Existing ShadowPtr instances will report Expired() == @c true after this call.
+         */
         [[nodiscard]] Pointer Release()
         {
             Pointer pReleased = m_pTyped;
@@ -802,10 +914,13 @@ namespace prtm
         }
 
         /**
-         * @brief Transfer ownership to another OwnerPtr type.
-         * @tparam VT2 Target object type.
-         * @tparam DT2 Target deleter type.
-         * @return New OwnerPtr receiving ownership.
+         * @brief Transfer ownership to an OwnerPtr of a different type.
+         * @tparam VT2 Target object type (must be convertible from VT).
+         * @tparam DT2 Target deleter type (defaults to DefaultDeleter<VT2>).
+         * @return A new OwnerPtr<VT2, DT2> owning the managed object.
+         *
+         * After the call, this OwnerPtr is emptied.  Unlike Cast(), no dynamic_cast
+         * is performed — the types must be statically compatible.
          */
 #if PRTM_HAS_CONCEPTS
         template<typename VT2 = VT, typename DT2 = detail::DefaultDeleter<VT2>>
@@ -827,10 +942,13 @@ namespace prtm
         }
 
         /**
-         * @brief Cast the owned object type with dynamic_cast while transferring ownership.
+         * @brief Cast the owned object to another type using dynamic_cast, transferring ownership.
          * @tparam VT2 Target object type.
-         * @tparam DT2 Target deleter type.
-         * @return Casted OwnerPtr, or an empty pointer if the cast fails.
+         * @tparam DT2 Target deleter type (defaults to DefaultDeleter<VT2>).
+         * @return A new OwnerPtr<VT2, DT2> owning the casted pointer.
+         *
+         * If the dynamic_cast fails, the current object is destroyed and an empty
+         * OwnerPtr is returned.  On success, this OwnerPtr is emptied (ownership moved).
          */
         template<typename VT2 = VT, typename DT2 = detail::DefaultDeleter<VT2>>
         [[nodiscard]] OwnerPtr<VT2, DT2> Cast()
@@ -852,9 +970,12 @@ namespace prtm
         }
 
         /**
-         * @brief Create a ShadowPtr that only observes the current object.
-         * @tparam VT2 Target ShadowPtr type.
-         * @return Newly created ShadowPtr.
+         * @brief Create a ShadowPtr that observes the managed object (const overload).
+         * @tparam VT2 Target ShadowPtr element type (must be convertible from VT).
+         * @return A new ShadowPtr sharing this OwnerPtr's control block.
+         *
+         * The returned ShadowPtr remains valid until the managed object is destroyed.
+         * @see EnableShadowFromThis::ShadowFromThis()
          */
 #if PRTM_HAS_CONCEPTS
         template<typename VT2 = VT>
@@ -875,9 +996,12 @@ namespace prtm
         }
 
         /**
-         * @brief Create a ShadowPtr that only observes the current object.
-         * @tparam VT2 Target ShadowPtr type.
-         * @return Newly created ShadowPtr.
+         * @brief Create a ShadowPtr that observes the managed object (non-const overload).
+         * @tparam VT2 Target ShadowPtr element type (must be convertible from VT).
+         * @return A new ShadowPtr sharing this OwnerPtr's control block.
+         *
+         * The returned ShadowPtr remains valid until the managed object is destroyed.
+         * @see EnableShadowFromThis::ShadowFromThis()
          */
 #if PRTM_HAS_CONCEPTS
         template<typename VT2 = VT>
@@ -1088,14 +1212,17 @@ namespace prtm
 #endif
 }
 
+/** @brief std specializations for prtm smart pointers. */
 namespace std
 {
+    /** @brief Swap two ShadowPtr instances. @relates prtm::ShadowPtr */
     template<typename T>
     void swap(prtm::ShadowPtr<T>& lhs, prtm::ShadowPtr<T>& rhs) noexcept
     {
         lhs.Swap(rhs);
     }
 
+    /** @brief Hash support for ShadowPtr, enabling use in unordered containers. @relates prtm::ShadowPtr */
     template<typename T>
     struct hash<prtm::ShadowPtr<T>>
     {
@@ -1105,6 +1232,7 @@ namespace std
         }
     };
 
+    /** @brief Equality comparison for ShadowPtr in standard algorithms. @relates prtm::ShadowPtr */
     template<typename T>
     struct equal_to<prtm::ShadowPtr<T>>
     {
@@ -1114,6 +1242,7 @@ namespace std
         }
     };
 
+    /** @brief Inequality comparison for ShadowPtr. @relates prtm::ShadowPtr */
     template<typename T>
     struct not_equal_to<prtm::ShadowPtr<T>>
     {
@@ -1123,6 +1252,7 @@ namespace std
         }
     };
 
+    /** @brief Less-than comparison for ShadowPtr. @relates prtm::ShadowPtr */
     template<typename T>
     struct less<prtm::ShadowPtr<T>>
     {
@@ -1132,6 +1262,7 @@ namespace std
         }
     };
 
+    /** @brief Less-equal comparison for ShadowPtr. @relates prtm::ShadowPtr */
     template<typename T>
     struct less_equal<prtm::ShadowPtr<T>>
     {
@@ -1141,6 +1272,7 @@ namespace std
         }
     };
 
+    /** @brief Greater-than comparison for ShadowPtr. @relates prtm::ShadowPtr */
     template<typename T>
     struct greater<prtm::ShadowPtr<T>>
     {
@@ -1150,6 +1282,7 @@ namespace std
         }
     };
 
+    /** @brief Greater-equal comparison for ShadowPtr. @relates prtm::ShadowPtr */
     template<typename T>
     struct greater_equal<prtm::ShadowPtr<T>>
     {
@@ -1159,12 +1292,14 @@ namespace std
         }
     };
 
+    /** @brief Swap two OwnerPtr instances. @relates prtm::OwnerPtr */
     template<typename VT, typename DT1 = prtm::detail::DefaultDeleter<VT>, typename DT2 = prtm::detail::DefaultDeleter<VT>>
     void swap(prtm::OwnerPtr<VT, DT1>& lhs, prtm::OwnerPtr<VT, DT2>& rhs) noexcept
     {
         lhs.Swap(rhs);
     }
 
+    /** @brief Hash support for OwnerPtr, enabling use in unordered containers. @relates prtm::OwnerPtr */
     template<typename VT, typename DT>
     struct hash<prtm::OwnerPtr<VT, DT>>
     {
@@ -1174,6 +1309,7 @@ namespace std
         }
     };
 
+    /** @brief Equality comparison for OwnerPtr in standard algorithms. @relates prtm::OwnerPtr */
     template<typename VT, typename DT>
     struct equal_to<prtm::OwnerPtr<VT, DT>>
     {
@@ -1183,6 +1319,7 @@ namespace std
         }
     };
 
+    /** @brief Inequality comparison for OwnerPtr. @relates prtm::OwnerPtr */
     template<typename VT, typename DT>
     struct not_equal_to<prtm::OwnerPtr<VT, DT>>
     {
@@ -1192,6 +1329,7 @@ namespace std
         }
     };
 
+    /** @brief Less-than comparison for OwnerPtr. @relates prtm::OwnerPtr */
     template<typename VT, typename DT>
     struct less<prtm::OwnerPtr<VT, DT>>
     {
@@ -1201,6 +1339,7 @@ namespace std
         }
     };
 
+    /** @brief Greater-than comparison for OwnerPtr. @relates prtm::OwnerPtr */
     template<typename VT, typename DT>
     struct greater<prtm::OwnerPtr<VT, DT>>
     {
@@ -1210,6 +1349,7 @@ namespace std
         }
     };
 
+    /** @brief Less-equal comparison for OwnerPtr. @relates prtm::OwnerPtr */
     template<typename VT, typename DT>
     struct less_equal<prtm::OwnerPtr<VT, DT>>
     {
@@ -1219,6 +1359,7 @@ namespace std
         }
     };
 
+    /** @brief Greater-equal comparison for OwnerPtr. @relates prtm::OwnerPtr */
     template<typename VT, typename DT>
     struct greater_equal<prtm::OwnerPtr<VT, DT>>
     {

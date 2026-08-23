@@ -23,5 +23,6 @@ var classprtm_1_1_shadow_ptr =
     [ "operator=", "classprtm_1_1_shadow_ptr.html#a57a2a28e9a5df0dc8813734d50546c65", null ],
     [ "operator=", "classprtm_1_1_shadow_ptr.html#ac41afcbfb1537069e4f298f0e29e8626", null ],
     [ "ShadowCount", "classprtm_1_1_shadow_ptr.html#ad5365777cc9a4cfeb7a8595761f934d2", null ],
-    [ "Swap", "classprtm_1_1_shadow_ptr.html#a315d7d8ed4106622bb381cca66c330a6", null ]
+    [ "Swap", "classprtm_1_1_shadow_ptr.html#a315d7d8ed4106622bb381cca66c330a6", null ],
+    [ "swap", "classprtm_1_1_shadow_ptr.html#abc9526803fcea5b9d014e5f2d26b9859", null ]
 ];

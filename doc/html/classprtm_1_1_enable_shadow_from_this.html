@@ -92,30 +92,94 @@ $(function(){initNavTree('classprtm_1_1_enable_shadow_from_this.html','','classp
 </div><!--header-->
 <div class="contents">
 
-<p>Enables a class to create <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning shadow pointer used to observe whether an object is still alive.">ShadowPtr</a> instances from this.  
+<p>CRTP base class that enables creating <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning observer pointer that detects when the target object is destroyed.">ShadowPtr</a> instances from <code>this</code>.  
  <a href="#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="_pretty_memory_8h_source.html">PrettyMemory.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aad6d5b157995aa2244250e6cc5b03e44" id="r_aad6d5b157995aa2244250e6cc5b03e44"><td class="memItemLeft"><a id="aad6d5b157995aa2244250e6cc5b03e44" name="aad6d5b157995aa2244250e6cc5b03e44"></a>
-<a class="el" href="classprtm_1_1_shadow_ptr.html">ShadowPtr</a>&lt; T &gt;&#160;</td><td class="memItemRight"><b>ShadowFromThis</b> ()</td></tr>
-<tr class="memdesc:aad6d5b157995aa2244250e6cc5b03e44"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning shadow pointer used to observe whether an object is still alive.">ShadowPtr</a> that references the current object. <br /></td></tr>
-<tr class="memitem:a83ee4e9ddfee324e570ecb4b5a7bc42c" id="r_a83ee4e9ddfee324e570ecb4b5a7bc42c"><td class="memItemLeft"><a id="a83ee4e9ddfee324e570ecb4b5a7bc42c" name="a83ee4e9ddfee324e570ecb4b5a7bc42c"></a>
-<a class="el" href="classprtm_1_1_shadow_ptr.html">ShadowPtr</a>&lt; const T &gt;&#160;</td><td class="memItemRight"><b>ShadowFromThis</b> () const</td></tr>
-<tr class="memdesc:a83ee4e9ddfee324e570ecb4b5a7bc42c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a const <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning shadow pointer used to observe whether an object is still alive.">ShadowPtr</a> that references the current object. <br /></td></tr>
+<tr class="memitem:aad6d5b157995aa2244250e6cc5b03e44" id="r_aad6d5b157995aa2244250e6cc5b03e44"><td class="memItemLeft"><a class="el" href="classprtm_1_1_shadow_ptr.html">ShadowPtr</a>&lt; T &gt;&#160;</td><td class="memItemRight"><a class="el" href="#aad6d5b157995aa2244250e6cc5b03e44">ShadowFromThis</a> ()</td></tr>
+<tr class="memdesc:aad6d5b157995aa2244250e6cc5b03e44"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning observer pointer that detects when the target object is destroyed.">ShadowPtr</a> that observes this object.  <br /></td></tr>
+<tr class="memitem:a83ee4e9ddfee324e570ecb4b5a7bc42c" id="r_a83ee4e9ddfee324e570ecb4b5a7bc42c"><td class="memItemLeft"><a class="el" href="classprtm_1_1_shadow_ptr.html">ShadowPtr</a>&lt; const T &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a83ee4e9ddfee324e570ecb4b5a7bc42c">ShadowFromThis</a> () const</td></tr>
+<tr class="memdesc:a83ee4e9ddfee324e570ecb4b5a7bc42c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a const <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning observer pointer that detects when the target object is destroyed.">ShadowPtr</a> that observes this object.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename T&gt;<br />
-class prtm::EnableShadowFromThis&lt; T &gt;</div><p>Enables a class to create <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning shadow pointer used to observe whether an object is still alive.">ShadowPtr</a> instances from this. </p>
+class prtm::EnableShadowFromThis&lt; T &gt;</div><p>CRTP base class that enables creating <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning observer pointer that detects when the target object is destroyed.">ShadowPtr</a> instances from <code>this</code>. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">T</td><td>Derived class type. </td></tr>
+    <tr><td class="paramname">T</td><td>Derived class type (the CRTP parameter).</td></tr>
   </table>
   </dd>
 </dl>
-</div><hr/>The documentation for this class was generated from the following file:<ul>
+<p>Derive your class from <a class="el" href="classprtm_1_1_enable_shadow_from_this.html" title="CRTP base class that enables creating ShadowPtr instances from this.">EnableShadowFromThis&lt;YourClass&gt;</a> and call <a class="el" href="#aad6d5b157995aa2244250e6cc5b03e44" title="Create a ShadowPtr that observes this object.">ShadowFromThis()</a> to obtain a <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning observer pointer that detects when the target object is destroyed.">ShadowPtr</a> that observes the current instance.</p>
+<p>The control block is lazily allocated on the first call to <a class="el" href="#aad6d5b157995aa2244250e6cc5b03e44" title="Create a ShadowPtr that observes this object.">ShadowFromThis()</a> and automatically invalidated when the derived object is destroyed.</p>
+<dl class="section note"><dt>Note</dt><dd>The derived class must be owned by an <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime and supports ShadowPtr observers.">OwnerPtr</a> or otherwise have a well-defined lifetime. Do not destroy the object while <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning observer pointer that detects when the target object is destroyed.">ShadowPtr</a> instances created via <a class="el" href="#aad6d5b157995aa2244250e6cc5b03e44" title="Create a ShadowPtr that observes this object.">ShadowFromThis()</a> are still in use from another thread without external synchronisation.</dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning observer pointer that detects when the target object is destroyed.">ShadowPtr</a>, <a class="el" href="classprtm_1_1_owner_ptr.html#ac37706901b2eba405cde713e1aa63d8d" title="Create a ShadowPtr that observes the managed object (non-const overload).">OwnerPtr::Shadow()</a> </dd></dl>
+</div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="aad6d5b157995aa2244250e6cc5b03e44" name="aad6d5b157995aa2244250e6cc5b03e44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad6d5b157995aa2244250e6cc5b03e44">&#9670;&#160;</a></span>ShadowFromThis() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classprtm_1_1_shadow_ptr.html">ShadowPtr</a>&lt; T &gt; <a class="el" href="classprtm_1_1_enable_shadow_from_this.html">prtm::EnableShadowFromThis</a>&lt; T &gt;::ShadowFromThis </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create a <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning observer pointer that detects when the target object is destroyed.">ShadowPtr</a> that observes this object. </p>
+<dl class="section return"><dt>Returns</dt><dd>A <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning observer pointer that detects when the target object is destroyed.">ShadowPtr&lt;T&gt;</a> sharing a control block with this object.</dd></dl>
+<p>The control block is allocated on first call. Subsequent calls reuse the same block, incrementing the shadow count each time. </p>
+
+</div>
+</div>
+<a id="a83ee4e9ddfee324e570ecb4b5a7bc42c" name="a83ee4e9ddfee324e570ecb4b5a7bc42c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83ee4e9ddfee324e570ecb4b5a7bc42c">&#9670;&#160;</a></span>ShadowFromThis() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classprtm_1_1_shadow_ptr.html">ShadowPtr</a>&lt; const T &gt; <a class="el" href="classprtm_1_1_enable_shadow_from_this.html">prtm::EnableShadowFromThis</a>&lt; T &gt;::ShadowFromThis </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create a const <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning observer pointer that detects when the target object is destroyed.">ShadowPtr</a> that observes this object. </p>
+<dl class="section return"><dt>Returns</dt><dd>A <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning observer pointer that detects when the target object is destroyed.">ShadowPtr&lt;const T&gt;</a> sharing a control block with this object. </dd></dl>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
 <li><a class="el" href="_pretty_memory_8h_source.html">PrettyMemory.h</a></li>
 </ul>
 </div><!-- contents -->

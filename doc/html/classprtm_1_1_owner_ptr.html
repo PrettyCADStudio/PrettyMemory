@@ -92,7 +92,7 @@ $(function(){initNavTree('classprtm_1_1_owner_ptr.html','','classprtm_1_1_owner_
 </div><!--header-->
 <div class="contents">
 
-<p>Owning smart pointer that manages an object's lifetime.  
+<p>Owning smart pointer that manages an object's lifetime and supports <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning observer pointer that detects when the target object is destroyed.">ShadowPtr</a> observers.  
  <a href="#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="_pretty_memory_8h_source.html">PrettyMemory.h</a>&gt;</code></p>
@@ -101,7 +101,7 @@ $(function(){initNavTree('classprtm_1_1_owner_ptr.html','','classprtm_1_1_owner_
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a2ebbfce42faec10db5a2e6a26cc600c6" id="r_a2ebbfce42faec10db5a2e6a26cc600c6"><td class="memTemplParams" colspan="2">template&lt;typename VT2 = VT, typename DT2 = detail::DefaultDeleter&lt;VT2&gt;&gt; </td></tr>
 <tr class="memitem:a2ebbfce42faec10db5a2e6a26cc600c6 template"><td class="memItemLeft">OwnerPtr&lt; VT2, DT2 &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a2ebbfce42faec10db5a2e6a26cc600c6">Cast</a> ()</td></tr>
-<tr class="memdesc:a2ebbfce42faec10db5a2e6a26cc600c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cast the owned object type with dynamic_cast while transferring ownership.  <br /></td></tr>
+<tr class="memdesc:a2ebbfce42faec10db5a2e6a26cc600c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cast the owned object to another type using dynamic_cast, transferring ownership.  <br /></td></tr>
 <tr class="memitem:a2ffdc8638a370b07ec21a08b150308bc" id="r_a2ffdc8638a370b07ec21a08b150308bc"><td class="memItemLeft"><a id="a2ffdc8638a370b07ec21a08b150308bc" name="a2ffdc8638a370b07ec21a08b150308bc"></a>
 Pointer&#160;</td><td class="memItemRight"><b>Data</b> ()</td></tr>
 <tr class="memdesc:a2ffdc8638a370b07ec21a08b150308bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the writable data pointer. <br /></td></tr>
@@ -116,13 +116,13 @@ ConstPointer&#160;</td><td class="memItemRight"><b>Get</b> () const</td></tr>
 <tr class="memdesc:a2b9c6bc3d0750d6e36f681c6fc2a2cab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the const raw pointer. <br /></td></tr>
 <tr class="memitem:a8a6939d2824c917677536156e0902616" id="r_a8a6939d2824c917677536156e0902616"><td class="memItemLeft"><a id="a8a6939d2824c917677536156e0902616" name="a8a6939d2824c917677536156e0902616"></a>
 bool&#160;</td><td class="memItemRight"><b>IsNull</b> () const</td></tr>
-<tr class="memdesc:a8a6939d2824c917677536156e0902616"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check whether this <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime.">OwnerPtr</a> is null. <br /></td></tr>
+<tr class="memdesc:a8a6939d2824c917677536156e0902616"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check whether this <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime and supports ShadowPtr observers.">OwnerPtr</a> is null. <br /></td></tr>
 <tr class="memitem:ab28c46930f8bb903f81844f430334594" id="r_ab28c46930f8bb903f81844f430334594"><td class="memItemLeft"><a id="ab28c46930f8bb903f81844f430334594" name="ab28c46930f8bb903f81844f430334594"></a>
 void&#160;</td><td class="memItemRight"><b>Nullify</b> ()</td></tr>
-<tr class="memdesc:ab28c46930f8bb903f81844f430334594"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release ownership of the current object and reset this pointer to null. <br /></td></tr>
+<tr class="memdesc:ab28c46930f8bb903f81844f430334594"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy the managed object and reset this pointer to empty. <br /></td></tr>
 <tr class="memitem:aa852dd8c159bd0ca02ec3a483c086a14" id="r_aa852dd8c159bd0ca02ec3a483c086a14"><td class="memItemLeft"><a id="aa852dd8c159bd0ca02ec3a483c086a14" name="aa852dd8c159bd0ca02ec3a483c086a14"></a>
 &#160;</td><td class="memItemRight"><b>operator bool</b> () const</td></tr>
-<tr class="memdesc:aa852dd8c159bd0ca02ec3a483c086a14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check whether this <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime.">OwnerPtr</a> currently owns an object. <br /></td></tr>
+<tr class="memdesc:aa852dd8c159bd0ca02ec3a483c086a14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check whether this <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime and supports ShadowPtr observers.">OwnerPtr</a> currently owns an object. <br /></td></tr>
 <tr class="memitem:a881b0f3e6003746a740c1a194dbda954" id="r_a881b0f3e6003746a740c1a194dbda954"><td class="memItemLeft"><a id="a881b0f3e6003746a740c1a194dbda954" name="a881b0f3e6003746a740c1a194dbda954"></a>
 Reference&#160;</td><td class="memItemRight"><b>operator*</b> ()</td></tr>
 <tr class="memdesc:a881b0f3e6003746a740c1a194dbda954"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dereference to obtain the managed object. <br /></td></tr>
@@ -137,66 +137,77 @@ ConstPointer&#160;</td><td class="memItemRight"><b>operator-&gt;</b> () const</t
 <tr class="memdesc:a394b2028c4b251e89383045419e6caac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Const access to the managed object through operator-&gt;. <br /></td></tr>
 <tr class="memitem:aea3d0f75778c90a4221d73edcddf5e52" id="r_aea3d0f75778c90a4221d73edcddf5e52"><td class="memTemplParams" colspan="2">template&lt;typename VT2 = VT, typename DT2 = detail::DefaultDeleter&lt;VT2&gt;, std::enable_if_t&lt; std::is_convertible_v&lt; VT2 *, VT * &gt;, int &gt; = 0&gt; </td></tr>
 <tr class="memitem:aea3d0f75778c90a4221d73edcddf5e52 template"><td class="memItemLeft">OwnerPtr &amp;&#160;</td><td class="memItemRight"><a class="el" href="#aea3d0f75778c90a4221d73edcddf5e52">operator=</a> (OwnerPtr&lt; VT2, DT2 &gt; &amp;&amp;other) noexcept</td></tr>
-<tr class="memdesc:aea3d0f75778c90a4221d73edcddf5e52"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move-assign from an <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime.">OwnerPtr</a> of a convertible type.  <br /></td></tr>
+<tr class="memdesc:aea3d0f75778c90a4221d73edcddf5e52"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move-assign from an <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime and supports ShadowPtr observers.">OwnerPtr</a> of a convertible type.  <br /></td></tr>
 <tr class="memitem:ae75bd31f33fc36830394587cdb41456c" id="r_ae75bd31f33fc36830394587cdb41456c"><td class="memItemLeft"><a id="ae75bd31f33fc36830394587cdb41456c" name="ae75bd31f33fc36830394587cdb41456c"></a>
 &#160;</td><td class="memItemRight"><b>OwnerPtr</b> ()=default</td></tr>
-<tr class="memdesc:ae75bd31f33fc36830394587cdb41456c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an empty <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime.">OwnerPtr</a>. <br /></td></tr>
+<tr class="memdesc:ae75bd31f33fc36830394587cdb41456c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an empty <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime and supports ShadowPtr observers.">OwnerPtr</a>. <br /></td></tr>
 <tr class="memitem:afd95c67cf261ed44108c648bb0d45411" id="r_afd95c67cf261ed44108c648bb0d45411"><td class="memTemplParams" colspan="2">template&lt;typename VT2 = VT, typename DT2 = detail::DefaultDeleter&lt;VT2&gt;, std::enable_if_t&lt; std::is_convertible_v&lt; VT2 *, VT * &gt;, int &gt; = 0&gt; </td></tr>
 <tr class="memitem:afd95c67cf261ed44108c648bb0d45411 template"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#afd95c67cf261ed44108c648bb0d45411">OwnerPtr</a> (OwnerPtr&lt; VT2, DT2 &gt; &amp;&amp;other) noexcept</td></tr>
-<tr class="memdesc:afd95c67cf261ed44108c648bb0d45411"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move-construct from an <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime.">OwnerPtr</a> of a convertible type.  <br /></td></tr>
+<tr class="memdesc:afd95c67cf261ed44108c648bb0d45411"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move-construct from an <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime and supports ShadowPtr observers.">OwnerPtr</a> of a convertible type.  <br /></td></tr>
 <tr class="memitem:ad21a83fe65cf273a98ddc5533965a42b" id="r_ad21a83fe65cf273a98ddc5533965a42b"><td class="memItemLeft"><a id="ad21a83fe65cf273a98ddc5533965a42b" name="ad21a83fe65cf273a98ddc5533965a42b"></a>
 &#160;</td><td class="memItemRight"><b>OwnerPtr</b> (std::nullptr_t)</td></tr>
-<tr class="memdesc:ad21a83fe65cf273a98ddc5533965a42b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an empty <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime.">OwnerPtr</a> from nullptr. <br /></td></tr>
+<tr class="memdesc:ad21a83fe65cf273a98ddc5533965a42b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an empty <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime and supports ShadowPtr observers.">OwnerPtr</a> from nullptr. <br /></td></tr>
 <tr class="memitem:a95201dadcee9952a20f67ef7bab1fdb4" id="r_a95201dadcee9952a20f67ef7bab1fdb4"><td class="memTemplParams" colspan="2">template&lt;typename VT2 = VT, typename DT2 = DT, std::enable_if_t&lt; std::is_convertible_v&lt; VT2 *, VT * &gt;, int &gt; = 0&gt; </td></tr>
 <tr class="memitem:a95201dadcee9952a20f67ef7bab1fdb4 template"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a95201dadcee9952a20f67ef7bab1fdb4">OwnerPtr</a> (typename OwnerPtr&lt; VT2, DT2 &gt;::Pointer pOther)</td></tr>
-<tr class="memdesc:a95201dadcee9952a20f67ef7bab1fdb4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime.">OwnerPtr</a> from a raw pointer.  <br /></td></tr>
-<tr class="memitem:a42b23af6d841d4d47ec19eb08911feec" id="r_a42b23af6d841d4d47ec19eb08911feec"><td class="memItemLeft"><a id="a42b23af6d841d4d47ec19eb08911feec" name="a42b23af6d841d4d47ec19eb08911feec"></a>
-Pointer&#160;</td><td class="memItemRight"><b>Release</b> ()</td></tr>
-<tr class="memdesc:a42b23af6d841d4d47ec19eb08911feec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release ownership and return the raw pointer. <br /></td></tr>
+<tr class="memdesc:a95201dadcee9952a20f67ef7bab1fdb4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime and supports ShadowPtr observers.">OwnerPtr</a> from a raw pointer.  <br /></td></tr>
+<tr class="memitem:a42b23af6d841d4d47ec19eb08911feec" id="r_a42b23af6d841d4d47ec19eb08911feec"><td class="memItemLeft">Pointer&#160;</td><td class="memItemRight"><a class="el" href="#a42b23af6d841d4d47ec19eb08911feec">Release</a> ()</td></tr>
+<tr class="memdesc:a42b23af6d841d4d47ec19eb08911feec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release ownership of the managed object and return the raw pointer.  <br /></td></tr>
 <tr class="memitem:a4616cc5ee7a2aad9e3b0289c5219d48d" id="r_a4616cc5ee7a2aad9e3b0289c5219d48d"><td class="memItemLeft"><a id="a4616cc5ee7a2aad9e3b0289c5219d48d" name="a4616cc5ee7a2aad9e3b0289c5219d48d"></a>
 void&#160;</td><td class="memItemRight"><b>Reset</b> ()</td></tr>
-<tr class="memdesc:a4616cc5ee7a2aad9e3b0289c5219d48d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset this <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime.">OwnerPtr</a> to empty. <br /></td></tr>
+<tr class="memdesc:a4616cc5ee7a2aad9e3b0289c5219d48d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy the managed object and reset this pointer to empty. <br /></td></tr>
 <tr class="memitem:a8c8b0c4f42eba5b72fc9e5ab3ff74e21" id="r_a8c8b0c4f42eba5b72fc9e5ab3ff74e21"><td class="memItemLeft"><a id="a8c8b0c4f42eba5b72fc9e5ab3ff74e21" name="a8c8b0c4f42eba5b72fc9e5ab3ff74e21"></a>
 void&#160;</td><td class="memItemRight"><b>Reset</b> (std::nullptr_t)</td></tr>
-<tr class="memdesc:a8c8b0c4f42eba5b72fc9e5ab3ff74e21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset this <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime.">OwnerPtr</a> to empty using nullptr. <br /></td></tr>
+<tr class="memdesc:a8c8b0c4f42eba5b72fc9e5ab3ff74e21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy the managed object and reset this pointer to empty. <br /></td></tr>
 <tr class="memitem:aa0d33f9e9d59ae906b6ab61833715805" id="r_aa0d33f9e9d59ae906b6ab61833715805"><td class="memTemplParams" colspan="2">template&lt;typename VT2 = VT, typename DT2 = DT, std::enable_if_t&lt; std::is_convertible_v&lt; VT2 *, VT * &gt;, int &gt; = 0&gt; </td></tr>
 <tr class="memitem:aa0d33f9e9d59ae906b6ab61833715805 template"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#aa0d33f9e9d59ae906b6ab61833715805">Reset</a> (typename OwnerPtr&lt; VT2, DT2 &gt;::Pointer pNew)</td></tr>
-<tr class="memdesc:aa0d33f9e9d59ae906b6ab61833715805"><td class="mdescLeft">&#160;</td><td class="mdescRight">Take ownership of a new raw pointer.  <br /></td></tr>
+<tr class="memdesc:aa0d33f9e9d59ae906b6ab61833715805"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace the managed object with a new raw pointer.  <br /></td></tr>
 <tr class="memitem:ac37706901b2eba405cde713e1aa63d8d" id="r_ac37706901b2eba405cde713e1aa63d8d"><td class="memTemplParams" colspan="2">template&lt;typename VT2 = VT, std::enable_if_t&lt; std::is_convertible_v&lt; VT *, VT2 * &gt;, int &gt; = 0&gt; </td></tr>
 <tr class="memitem:ac37706901b2eba405cde713e1aa63d8d template"><td class="memItemLeft">ShadowPtr&lt; VT2 &gt;&#160;</td><td class="memItemRight"><a class="el" href="#ac37706901b2eba405cde713e1aa63d8d">Shadow</a> ()</td></tr>
-<tr class="memdesc:ac37706901b2eba405cde713e1aa63d8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning shadow pointer used to observe whether an object is still alive.">ShadowPtr</a> that only observes the current object.  <br /></td></tr>
+<tr class="memdesc:ac37706901b2eba405cde713e1aa63d8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning observer pointer that detects when the target object is destroyed.">ShadowPtr</a> that observes the managed object (non-const overload).  <br /></td></tr>
 <tr class="memitem:a7629411ef6cb5a2e9a2188a4867a3372" id="r_a7629411ef6cb5a2e9a2188a4867a3372"><td class="memTemplParams" colspan="2">template&lt;typename VT2 = VT, std::enable_if_t&lt; std::is_convertible_v&lt; VT *, VT2 * &gt;, int &gt; = 0&gt; </td></tr>
 <tr class="memitem:a7629411ef6cb5a2e9a2188a4867a3372 template"><td class="memItemLeft">ShadowPtr&lt; VT2 &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a7629411ef6cb5a2e9a2188a4867a3372">Shadow</a> () const</td></tr>
-<tr class="memdesc:a7629411ef6cb5a2e9a2188a4867a3372"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning shadow pointer used to observe whether an object is still alive.">ShadowPtr</a> that only observes the current object.  <br /></td></tr>
-<tr class="memitem:a0907e22b562dd96bdaf1df1718f25fa4" id="r_a0907e22b562dd96bdaf1df1718f25fa4"><td class="memItemLeft"><a id="a0907e22b562dd96bdaf1df1718f25fa4" name="a0907e22b562dd96bdaf1df1718f25fa4"></a>
-std::size_t&#160;</td><td class="memItemRight"><b>ShadowCount</b> () const</td></tr>
-<tr class="memdesc:a0907e22b562dd96bdaf1df1718f25fa4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning shadow pointer used to observe whether an object is still alive.">ShadowPtr</a> instances associated with this object. <br /></td></tr>
+<tr class="memdesc:a7629411ef6cb5a2e9a2188a4867a3372"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning observer pointer that detects when the target object is destroyed.">ShadowPtr</a> that observes the managed object (const overload).  <br /></td></tr>
+<tr class="memitem:a0907e22b562dd96bdaf1df1718f25fa4" id="r_a0907e22b562dd96bdaf1df1718f25fa4"><td class="memItemLeft">std::size_t&#160;</td><td class="memItemRight"><a class="el" href="#a0907e22b562dd96bdaf1df1718f25fa4">ShadowCount</a> () const</td></tr>
+<tr class="memdesc:a0907e22b562dd96bdaf1df1718f25fa4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning observer pointer that detects when the target object is destroyed.">ShadowPtr</a> instances observing the managed object.  <br /></td></tr>
 <tr class="memitem:a6e491037673ab16015ed6b39f5a09fb0" id="r_a6e491037673ab16015ed6b39f5a09fb0"><td class="memTemplParams" colspan="2">template&lt;typename DT2 = DT&gt; </td></tr>
 <tr class="memitem:a6e491037673ab16015ed6b39f5a09fb0 template"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a6e491037673ab16015ed6b39f5a09fb0">Swap</a> (OwnerPtr&lt; VT, DT2 &gt; &amp;other) noexcept</td></tr>
-<tr class="memdesc:a6e491037673ab16015ed6b39f5a09fb0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Swap state with another <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime.">OwnerPtr</a>.  <br /></td></tr>
+<tr class="memdesc:a6e491037673ab16015ed6b39f5a09fb0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Swap state with another <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime and supports ShadowPtr observers.">OwnerPtr</a>.  <br /></td></tr>
 <tr class="memitem:aabb1666266f26648ee4b4fa92dabb833" id="r_aabb1666266f26648ee4b4fa92dabb833"><td class="memTemplParams" colspan="2">template&lt;typename VT2 = VT, typename DT2 = detail::DefaultDeleter&lt;VT2&gt;, std::enable_if_t&lt; std::is_convertible_v&lt; VT2 *, VT * &gt;, int &gt; = 0&gt; </td></tr>
 <tr class="memitem:aabb1666266f26648ee4b4fa92dabb833 template"><td class="memItemLeft">OwnerPtr&lt; VT2, DT2 &gt;&#160;</td><td class="memItemRight"><a class="el" href="#aabb1666266f26648ee4b4fa92dabb833">Transfer</a> ()</td></tr>
-<tr class="memdesc:aabb1666266f26648ee4b4fa92dabb833"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transfer ownership to another <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime.">OwnerPtr</a> type.  <br /></td></tr>
+<tr class="memdesc:aabb1666266f26648ee4b4fa92dabb833"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transfer ownership to an <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime and supports ShadowPtr observers.">OwnerPtr</a> of a different type.  <br /></td></tr>
 <tr class="memitem:a4c20ddf689024e8109f3cb71013149c0" id="r_a4c20ddf689024e8109f3cb71013149c0"><td class="memItemLeft"><a id="a4c20ddf689024e8109f3cb71013149c0" name="a4c20ddf689024e8109f3cb71013149c0"></a>
 &#160;</td><td class="memItemRight"><b>~OwnerPtr</b> ()</td></tr>
-<tr class="memdesc:a4c20ddf689024e8109f3cb71013149c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy this <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime.">OwnerPtr</a> and delete the managed object when needed. <br /></td></tr>
+<tr class="memdesc:a4c20ddf689024e8109f3cb71013149c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy this <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime and supports ShadowPtr observers.">OwnerPtr</a> and delete the managed object when needed. <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:aded1d2eedec1108dd5579bd6e4baa49f" id="r_aded1d2eedec1108dd5579bd6e4baa49f"><td class="memTemplParams" colspan="2">template&lt;typename... ArgTypes, std::enable_if_t&lt; std::is_constructible_v&lt; VT, ArgTypes... &gt;, int &gt; = 0&gt; </td></tr>
 <tr class="memitem:aded1d2eedec1108dd5579bd6e4baa49f template"><td class="memItemLeft">static OwnerPtr&#160;</td><td class="memItemRight"><a class="el" href="#aded1d2eedec1108dd5579bd6e4baa49f">Create</a> (ArgTypes &amp;&amp;... args)</td></tr>
-<tr class="memdesc:aded1d2eedec1108dd5579bd6e4baa49f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an object in place and return an <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime.">OwnerPtr</a>.  <br /></td></tr>
+<tr class="memdesc:aded1d2eedec1108dd5579bd6e4baa49f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an object in place and return an <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime and supports ShadowPtr observers.">OwnerPtr</a> managing it.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-related" class="groupheader"><a id="related" name="related"></a>
+Related Symbols</h2></td></tr>
+<tr><td class="ititle" colspan="2"><p>(Note that these are not member symbols.) </p>
+</td></tr>
+<tr class="memitem:a59b0f8df8db1cad5c752367e52facafb" id="r_a59b0f8df8db1cad5c752367e52facafb"><td class="memTemplParams" colspan="2"><a id="a59b0f8df8db1cad5c752367e52facafb" name="a59b0f8df8db1cad5c752367e52facafb"></a>
+template&lt;typename VT, typename DT1 = prtm::detail::DefaultDeleter&lt;VT&gt;, typename DT2 = prtm::detail::DefaultDeleter&lt;VT&gt;&gt; </td></tr>
+<tr class="memitem:a59b0f8df8db1cad5c752367e52facafb template"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><b>swap</b> (<a class="el" href="classprtm_1_1_owner_ptr.html">prtm::OwnerPtr</a>&lt; VT, DT1 &gt; &amp;lhs, <a class="el" href="classprtm_1_1_owner_ptr.html">prtm::OwnerPtr</a>&lt; VT, DT2 &gt; &amp;rhs) noexcept</td></tr>
+<tr class="memdesc:a59b0f8df8db1cad5c752367e52facafb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Swap two <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime and supports ShadowPtr observers.">OwnerPtr</a> instances. <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename VT, typename DT = detail::DefaultDeleter&lt;VT&gt;&gt;<br />
-class prtm::OwnerPtr&lt; VT, DT &gt;</div><p>Owning smart pointer that manages an object's lifetime. </p>
+class prtm::OwnerPtr&lt; VT, DT &gt;</div><p>Owning smart pointer that manages an object's lifetime and supports <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning observer pointer that detects when the target object is destroyed.">ShadowPtr</a> observers. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">VT</td><td>Object type. </td></tr>
-    <tr><td class="paramname">DT</td><td>Deleter type. </td></tr>
+    <tr><td class="paramname">DT</td><td>Deleter type. Must be callable with <code>void*</code>. Defaults to DefaultDeleter&lt;VT&gt;.</td></tr>
   </table>
   </dd>
 </dl>
+<p><a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime and supports ShadowPtr observers.">OwnerPtr</a> is move-only (copy is deleted). Moving transfers both the managed pointer and the control block to the new <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime and supports ShadowPtr observers.">OwnerPtr</a>.</p>
+<p>Use the static factory <a class="el" href="#aded1d2eedec1108dd5579bd6e4baa49f" title="Construct an object in place and return an OwnerPtr managing it.">Create()</a> to construct an <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime and supports ShadowPtr observers.">OwnerPtr</a> in-place, or construct from a raw pointer / nullptr.</p>
+<p>When the <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime and supports ShadowPtr observers.">OwnerPtr</a> is destroyed or reset, it invokes the deleter on the managed object and sets the control block's Data pointer to <code>nullptr</code>. Existing <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning observer pointer that detects when the target object is destroyed.">ShadowPtr</a> instances then report Expired() == <code>true</code>.</p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning observer pointer that detects when the target object is destroyed.">ShadowPtr</a>, <a class="el" href="classprtm_1_1_enable_shadow_from_this.html" title="CRTP base class that enables creating ShadowPtr instances from this.">EnableShadowFromThis</a> </dd></dl>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a95201dadcee9952a20f67ef7bab1fdb4" name="a95201dadcee9952a20f67ef7bab1fdb4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a95201dadcee9952a20f67ef7bab1fdb4">&#9670;&#160;</a></span>OwnerPtr() <span class="overload">[1/2]</span></h2>
@@ -225,7 +236,7 @@ template&lt;typename VT2 = VT, typename DT2 = DT, std::enable_if_t&lt; std::is_c
 </table>
 </div><div class="memdoc">
 
-<p>Construct an <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime.">OwnerPtr</a> from a raw pointer. </p>
+<p>Construct an <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime and supports ShadowPtr observers.">OwnerPtr</a> from a raw pointer. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">VT2</td><td>Source object type. </td></tr>
@@ -269,7 +280,7 @@ template&lt;typename VT2 = VT, typename DT2 = detail::DefaultDeleter&lt;VT2&gt;,
 </table>
 </div><div class="memdoc">
 
-<p>Move-construct from an <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime.">OwnerPtr</a> of a convertible type. </p>
+<p>Move-construct from an <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime and supports ShadowPtr observers.">OwnerPtr</a> of a convertible type. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">VT2</td><td>Source object type. </td></tr>
@@ -279,7 +290,7 @@ template&lt;typename VT2 = VT, typename DT2 = detail::DefaultDeleter&lt;VT2&gt;,
 </dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">other</td><td>Source <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime.">OwnerPtr</a>. </td></tr>
+    <tr><td class="paramname">other</td><td>Source <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime and supports ShadowPtr observers.">OwnerPtr</a>. </td></tr>
   </table>
   </dd>
 </dl>
@@ -314,15 +325,16 @@ template&lt;typename VT2 = VT, typename DT2 = detail::DefaultDeleter&lt;VT2&gt;&
 </table>
 </div><div class="memdoc">
 
-<p>Cast the owned object type with dynamic_cast while transferring ownership. </p>
+<p>Cast the owned object to another type using dynamic_cast, transferring ownership. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">VT2</td><td>Target object type. </td></tr>
-    <tr><td class="paramname">DT2</td><td>Target deleter type. </td></tr>
+    <tr><td class="paramname">DT2</td><td>Target deleter type (defaults to DefaultDeleter&lt;VT2&gt;). </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Casted <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime.">OwnerPtr</a>, or an empty pointer if the cast fails. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>A new OwnerPtr&lt;VT2, DT2&gt; owning the casted pointer.</dd></dl>
+<p>If the dynamic_cast fails, the current object is destroyed and an empty <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime and supports ShadowPtr observers.">OwnerPtr</a> is returned. On success, this <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime and supports ShadowPtr observers.">OwnerPtr</a> is emptied (ownership moved). </p>
 
 </div>
 </div>
@@ -353,20 +365,21 @@ template&lt;typename... ArgTypes, std::enable_if_t&lt; std::is_constructible_v&l
 </table>
 </div><div class="memdoc">
 
-<p>Construct an object in place and return an <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime.">OwnerPtr</a>. </p>
+<p>Construct an object in place and return an <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime and supports ShadowPtr observers.">OwnerPtr</a> managing it. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">ArgTypes</td><td>Constructor argument types. </td></tr>
+    <tr><td class="paramname">ArgTypes</td><td>Constructor argument types (deduced). </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">args</td><td>Arguments forwarded to the object constructor. </td></tr>
+    <tr><td class="paramname">args</td><td>Arguments forwarded to the VT constructor. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime.">OwnerPtr</a> managing the newly created object. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime and supports ShadowPtr observers.">OwnerPtr</a> managing the newly created object.</dd></dl>
+<p>Equivalent to <code>new</code> VT{args...} wrapped in an <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime and supports ShadowPtr observers.">OwnerPtr</a>. </p>
 
 </div>
 </div>
@@ -397,7 +410,7 @@ template&lt;typename VT2 = VT, typename DT2 = detail::DefaultDeleter&lt;VT2&gt;,
 </table>
 </div><div class="memdoc">
 
-<p>Move-assign from an <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime.">OwnerPtr</a> of a convertible type. </p>
+<p>Move-assign from an <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime and supports ShadowPtr observers.">OwnerPtr</a> of a convertible type. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">VT2</td><td>Source object type. </td></tr>
@@ -407,11 +420,42 @@ template&lt;typename VT2 = VT, typename DT2 = detail::DefaultDeleter&lt;VT2&gt;,
 </dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">other</td><td>Source <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime.">OwnerPtr</a>. </td></tr>
+    <tr><td class="paramname">other</td><td>Source <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime and supports ShadowPtr observers.">OwnerPtr</a>. </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Reference to this object. </dd></dl>
+
+</div>
+</div>
+<a id="a42b23af6d841d4d47ec19eb08911feec" name="a42b23af6d841d4d47ec19eb08911feec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42b23af6d841d4d47ec19eb08911feec">&#9670;&#160;</a></span>Release()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename VT, typename DT = detail::DefaultDeleter&lt;VT&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Pointer <a class="el" href="classprtm_1_1_owner_ptr.html">prtm::OwnerPtr</a>&lt; VT, DT &gt;::Release </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Release ownership of the managed object and return the raw pointer. </p>
+<dl class="section return"><dt>Returns</dt><dd>The raw pointer to the formerly managed object.</dd></dl>
+<p>The caller is responsible for eventually deleting the returned pointer. Existing <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning observer pointer that detects when the target object is destroyed.">ShadowPtr</a> instances will report Expired() == <code>true</code> after this call. </p>
 
 </div>
 </div>
@@ -442,20 +486,21 @@ template&lt;typename VT2 = VT, typename DT2 = DT, std::enable_if_t&lt; std::is_c
 </table>
 </div><div class="memdoc">
 
-<p>Take ownership of a new raw pointer. </p>
+<p>Replace the managed object with a new raw pointer. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">VT2</td><td>Source object type. </td></tr>
-    <tr><td class="paramname">DT2</td><td>Source deleter type. </td></tr>
+    <tr><td class="paramname">VT2</td><td>New object type (must be convertible to VT). </td></tr>
+    <tr><td class="paramname">DT2</td><td>Deleter type for the new object. </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">pNew</td><td>New raw pointer. </td></tr>
+    <tr><td class="paramname">pNew</td><td>New raw pointer to take ownership of. May be nullptr.</td></tr>
   </table>
   </dd>
 </dl>
+<p>The previously managed object (if any) is destroyed before the new pointer is adopted. </p>
 
 </div>
 </div>
@@ -486,14 +531,15 @@ template&lt;typename VT2 = VT, std::enable_if_t&lt; std::is_convertible_v&lt; VT
 </table>
 </div><div class="memdoc">
 
-<p>Create a <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning shadow pointer used to observe whether an object is still alive.">ShadowPtr</a> that only observes the current object. </p>
+<p>Create a <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning observer pointer that detects when the target object is destroyed.">ShadowPtr</a> that observes the managed object (non-const overload). </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">VT2</td><td>Target <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning shadow pointer used to observe whether an object is still alive.">ShadowPtr</a> type. </td></tr>
+    <tr><td class="paramname">VT2</td><td>Target <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning observer pointer that detects when the target object is destroyed.">ShadowPtr</a> element type (must be convertible from VT). </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Newly created <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning shadow pointer used to observe whether an object is still alive.">ShadowPtr</a>. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>A new <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning observer pointer that detects when the target object is destroyed.">ShadowPtr</a> sharing this <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime and supports ShadowPtr observers.">OwnerPtr</a>'s control block.</dd></dl>
+<p>The returned <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning observer pointer that detects when the target object is destroyed.">ShadowPtr</a> remains valid until the managed object is destroyed. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="classprtm_1_1_enable_shadow_from_this.html#aad6d5b157995aa2244250e6cc5b03e44" title="Create a ShadowPtr that observes this object.">EnableShadowFromThis::ShadowFromThis()</a> </dd></dl>
 
 </div>
 </div>
@@ -524,14 +570,45 @@ template&lt;typename VT2 = VT, std::enable_if_t&lt; std::is_convertible_v&lt; VT
 </table>
 </div><div class="memdoc">
 
-<p>Create a <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning shadow pointer used to observe whether an object is still alive.">ShadowPtr</a> that only observes the current object. </p>
+<p>Create a <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning observer pointer that detects when the target object is destroyed.">ShadowPtr</a> that observes the managed object (const overload). </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">VT2</td><td>Target <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning shadow pointer used to observe whether an object is still alive.">ShadowPtr</a> type. </td></tr>
+    <tr><td class="paramname">VT2</td><td>Target <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning observer pointer that detects when the target object is destroyed.">ShadowPtr</a> element type (must be convertible from VT). </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Newly created <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning shadow pointer used to observe whether an object is still alive.">ShadowPtr</a>. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>A new <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning observer pointer that detects when the target object is destroyed.">ShadowPtr</a> sharing this <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime and supports ShadowPtr observers.">OwnerPtr</a>'s control block.</dd></dl>
+<p>The returned <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning observer pointer that detects when the target object is destroyed.">ShadowPtr</a> remains valid until the managed object is destroyed. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="classprtm_1_1_enable_shadow_from_this.html#aad6d5b157995aa2244250e6cc5b03e44" title="Create a ShadowPtr that observes this object.">EnableShadowFromThis::ShadowFromThis()</a> </dd></dl>
+
+</div>
+</div>
+<a id="a0907e22b562dd96bdaf1df1718f25fa4" name="a0907e22b562dd96bdaf1df1718f25fa4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0907e22b562dd96bdaf1df1718f25fa4">&#9670;&#160;</a></span>ShadowCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename VT, typename DT = detail::DefaultDeleter&lt;VT&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t <a class="el" href="classprtm_1_1_owner_ptr.html">prtm::OwnerPtr</a>&lt; VT, DT &gt;::ShadowCount </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the number of <a class="el" href="classprtm_1_1_shadow_ptr.html" title="Non-owning observer pointer that detects when the target object is destroyed.">ShadowPtr</a> instances observing the managed object. </p>
+<dl class="section return"><dt>Returns</dt><dd>The current shadow count, or 0 if this <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime and supports ShadowPtr observers.">OwnerPtr</a> is empty. </dd></dl>
 
 </div>
 </div>
@@ -562,7 +639,7 @@ template&lt;typename DT2 = DT&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Swap state with another <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime.">OwnerPtr</a>. </p>
+<p>Swap state with another <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime and supports ShadowPtr observers.">OwnerPtr</a>. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">DT2</td><td>Other deleter type. </td></tr>
@@ -571,7 +648,7 @@ template&lt;typename DT2 = DT&gt; </div>
 </dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">other</td><td><a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime.">OwnerPtr</a> to swap with. </td></tr>
+    <tr><td class="paramname">other</td><td><a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime and supports ShadowPtr observers.">OwnerPtr</a> to swap with. </td></tr>
   </table>
   </dd>
 </dl>
@@ -605,15 +682,16 @@ template&lt;typename VT2 = VT, typename DT2 = detail::DefaultDeleter&lt;VT2&gt;,
 </table>
 </div><div class="memdoc">
 
-<p>Transfer ownership to another <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime.">OwnerPtr</a> type. </p>
+<p>Transfer ownership to an <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime and supports ShadowPtr observers.">OwnerPtr</a> of a different type. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">VT2</td><td>Target object type. </td></tr>
-    <tr><td class="paramname">DT2</td><td>Target deleter type. </td></tr>
+    <tr><td class="paramname">VT2</td><td>Target object type (must be convertible from VT). </td></tr>
+    <tr><td class="paramname">DT2</td><td>Target deleter type (defaults to DefaultDeleter&lt;VT2&gt;). </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>New <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime.">OwnerPtr</a> receiving ownership. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>A new OwnerPtr&lt;VT2, DT2&gt; owning the managed object.</dd></dl>
+<p>After the call, this <a class="el" href="classprtm_1_1_owner_ptr.html" title="Owning smart pointer that manages an object&#39;s lifetime and supports ShadowPtr observers.">OwnerPtr</a> is emptied. Unlike <a class="el" href="#a2ebbfce42faec10db5a2e6a26cc600c6" title="Cast the owned object to another type using dynamic_cast, transferring ownership.">Cast()</a>, no dynamic_cast is performed — the types must be statically compatible. </p>
 
 </div>
 </div>

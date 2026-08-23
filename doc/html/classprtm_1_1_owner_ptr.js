@@ -26,5 +26,6 @@ var classprtm_1_1_owner_ptr =
     [ "Shadow", "classprtm_1_1_owner_ptr.html#a7629411ef6cb5a2e9a2188a4867a3372", null ],
     [ "ShadowCount", "classprtm_1_1_owner_ptr.html#a0907e22b562dd96bdaf1df1718f25fa4", null ],
     [ "Swap", "classprtm_1_1_owner_ptr.html#a6e491037673ab16015ed6b39f5a09fb0", null ],
-    [ "Transfer", "classprtm_1_1_owner_ptr.html#aabb1666266f26648ee4b4fa92dabb833", null ]
+    [ "Transfer", "classprtm_1_1_owner_ptr.html#aabb1666266f26648ee4b4fa92dabb833", null ],
+    [ "swap", "classprtm_1_1_owner_ptr.html#a59b0f8df8db1cad5c752367e52facafb", null ]
 ];
