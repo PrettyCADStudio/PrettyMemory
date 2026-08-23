@@ -40,7 +40,7 @@ CI builds in Release with `-G "Visual Studio 17 2022" -A x64`.
 
 ## Architecture
 
-Header-only C++17 smart pointer library. The entire implementation lives in `include/PrettyMemory.h`. There is no `src/` directory or compiled library target.
+Header-only C++17/C++20 smart pointer library. The entire implementation lives in `include/PrettyMemory.h`. There is no `src/` directory or compiled library target.
 
 Public API (namespace `prtm`):
 - `OwnerPtr<T, Deleter>` — owning smart pointer, move-only, custom deleter support, `Create`, `Transfer`, `Cast`, `Shadow`
@@ -68,6 +68,6 @@ Do not use raw `TEST()` macros. Always use the `DEFINE_TEST_BEGIN`/`DEFINE_TEST_
 - Namespace: `prtm` (public), `prtm::detail` (internal). NOT `PrettyMemory`.
 - The header uses `#pragma once`.
 - Standard library only — no third-party runtime dependencies.
-- C++17 is the default; overridable via `-DCXX_STD=N`.
+- C++17 is the default; C++20 enables concepts and the `<=>` spaceship operator. Overridable via `-DCXX_STD=N`.
 - MSVC gets `/utf-8` flag automatically.
 - Keep library implementation inline in headers. New functionality goes in `include/PrettyMemory.h`.

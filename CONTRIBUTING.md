@@ -3,7 +3,7 @@
 ## Prerequisites
 
 - CMake 3.28 or newer
-- C++17 compiler (Visual Studio 2022 or 2026 on Windows)
+- C++17 compiler (Visual Studio 2022 or 2026 on Windows). C++20 enables concepts and the `<=>` spaceship operator.
 - Python 3.13+ and Pipenv (for helper scripts)
 
 ## Build and test
@@ -61,7 +61,7 @@ DEFINE_TEST_END
 - Namespace: `prtm` (public), `prtm::detail` (internal)
 - `#pragma once` for include guards
 - Standard library only, no third-party runtime dependencies
-- C++17 is the default standard
+- C++17 is the default standard; C++20 enables concepts and the `<=>` spaceship operator
 - MSVC gets `/utf-8` automatically
 
 ## Pull requests

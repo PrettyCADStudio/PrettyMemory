@@ -2,7 +2,7 @@
 
 ## Project overview
 
-Header-only C++17 smart pointer library. The entire implementation lives in a single file: `include/PrettyMemory.h`. There is no `src/` directory or compiled library target.
+Header-only C++17/C++20 smart pointer library. The entire implementation lives in a single file: `include/PrettyMemory.h`. There is no `src/` directory or compiled library target.
 
 Public API types (namespace `prtm`):
 - `OwnerPtr<T, Deleter>` — owning smart pointer, move-only, custom deleter support
@@ -56,9 +56,9 @@ Test files: `OwnerPtr.Test.cpp`, `ShadowPtr.Test.cpp`, `EnableShadowFromThis.Tes
 ## Code conventions
 
 - Namespace: `prtm` (public), `prtm::detail` (internal). NOT `PrettyMemory`.
-- The header uses `#pragma once` (the copilot-instructions.md incorrectly says classic include guards).
+- The header uses `#pragma once`.
 - Standard library only — no third-party runtime dependencies.
-- C++17 is the default; overridable via `-DCXX_STD=N`.
+- C++17 is the default; C++20 enables concepts and the `<=>` spaceship operator. Overridable via `-DCXX_STD=N`.
 - MSVC gets `/utf-8` flag automatically.
 - Build outputs go to `bin/`, intermediate files to `build/`.
 
@@ -72,7 +72,3 @@ cmake --build build\docs --target docs
 ```
 
 Output: `doc/html`. Deployed to GitHub Pages on push to `main`.
-
-## Stale copilot instructions
-
-`.github/copilot-instructions.md` references an older design (`PrettyMemory` namespace, `MemoryPool` API). The actual codebase uses `prtm` namespace with `OwnerPtr`/`ShadowPtr`/`EnableShadowFromThis`. Do not rely on that file for API details.

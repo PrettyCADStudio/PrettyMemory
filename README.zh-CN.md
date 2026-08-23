@@ -1,6 +1,6 @@
 # PrettyMemory
 
-仅头文件的 C++17 智能指针库，提供显式所有权管理与安全的对象观察机制。
+仅头文件的 C++17/C++20 智能指针库，提供显式所有权管理与安全的对象观察机制。
 
 [API 文档](doc/html/index.html) | [English README](README.md) | [贡献指南](CONTRIBUTING.md)
 
@@ -18,7 +18,7 @@
 
 ## 编译与测试
 
-需要：CMake 3.28+、C++17 编译器。
+需要：CMake 3.28+、C++17 编译器。C++20 可启用 concepts 和 `<=>` 太空船运算符。
 
 ```powershell
 cmake -S . -B build
@@ -51,7 +51,7 @@ pipenv run clean              # 清理 build/、bin/、.vs/、.idea/
 pipenv run doc                # 生成 Doxygen 文档
 ```
 
-CI 使用 `-G "Visual Studio 17 2022" -A x64` 以 Release 配置构建。
+CI 使用 `-G "Visual Studio 17 2022" -A x64` 以 Release 配置构建。同时支持 C++17 和 C++20；C++20 可启用 concepts 和 `<=>` 太空船运算符。
 
 ## 生成 API 文档
 

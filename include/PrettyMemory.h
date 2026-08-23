@@ -1,6 +1,6 @@
 /**
  * @file PrettyMemory.h
- * @brief Header-only C++17 smart pointer library with non-owning observer support.
+ * @brief Header-only C++17/C++20 smart pointer library with non-owning observer support.
  *
  * This library provides two smart pointer types that share a common control block:
  * - OwnerPtr<T>       — owning pointer, move-only, manages object lifetime.
@@ -34,7 +34,8 @@
  * OwnerPtr / ShadowPtr group from multiple threads requires external synchronisation.
  *
  * @par Requirements
- * - C++17 or later (C++20 concepts used when available).
+ * - C++17 or later.
+ * - C++20 enables concepts (replacing SFINAE) and the `<=>` spaceship operator.
  * - No third-party dependencies; standard library only.
  */
 #pragma once

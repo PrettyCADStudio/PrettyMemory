@@ -1,6 +1,6 @@
 # PrettyMemory
 
-Header-only C++17 smart pointer library with explicit ownership and safe observation.
+Header-only C++17/C++20 smart pointer library with explicit ownership and safe observation.
 
 [API documentation](doc/html/index.html) | [中文说明](README.zh-CN.md) | [Contributing](CONTRIBUTING.md)
 
@@ -18,7 +18,7 @@ The entire implementation lives in `include/PrettyMemory.h`.
 
 ## Build and test
 
-Requires: CMake 3.28+, C++17 compiler.
+Requires: CMake 3.28+, C++17 compiler. C++20 enables concepts and the `<=>` spaceship operator.
 
 ```powershell
 cmake -S . -B build
@@ -51,7 +51,7 @@ pipenv run clean              # remove build/, bin/, .vs/, .idea/
 pipenv run doc                # generate Doxygen docs
 ```
 
-CI builds in Release with `-G "Visual Studio 17 2022" -A x64`.
+CI builds in Release with `-G "Visual Studio 17 2022" -A x64`. Both C++17 and C++20 are supported; C++20 enables concepts and the `<=>` spaceship operator.
 
 ## Generate API documentation
 
