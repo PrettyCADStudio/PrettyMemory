@@ -35,7 +35,7 @@ def main_linux():
 
 
 if __name__ == "__main__":
-    if sys.platform == "Windows":
+    if sys.platform == "win32":
         main_windows()
     else:
         main_linux()

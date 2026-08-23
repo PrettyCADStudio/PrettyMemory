@@ -42,13 +42,13 @@ def get_solution_file() -> Path:
 
 
 def get_cmake_generator() -> str:
-    if sys.platform == "Windows":
+    if sys.platform == "win32":
         return "Visual Studio 18 2026"
     else:
         return "Unix Makefiles"
 
 def path_to_string(path: Path) -> str:
-    if sys.platform == "Windows":
+    if sys.platform == "win32":
         return str(path).replace('\\', '/')
     else:
         return str(path)

@@ -9,6 +9,24 @@
 #include <type_traits>
 #include <utility>
 
+#if defined(_MSVC_LANG)
+#define PRTM_CXX_STANDARD _MSVC_LANG
+#else
+#define PRTM_CXX_STANDARD __cplusplus
+#endif
+
+#if PRTM_CXX_STANDARD >= 202002L
+#define PRTM_HAS_CPP20 1
+#else
+#define PRTM_HAS_CPP20 0
+#endif
+
+#if PRTM_HAS_CPP20 && defined(__cpp_concepts)
+#define PRTM_HAS_CONCEPTS 1
+#else
+#define PRTM_HAS_CONCEPTS 0
+#endif
+
 namespace prtm
 {
     namespace detail
@@ -90,7 +108,12 @@ namespace prtm
          * @tparam T2 Source object type.
          * @param other Source ShadowPtr.
          */
+#if PRTM_HAS_CONCEPTS
+        template<typename T2 = T>
+        requires std::convertible_to<T2*, T*>
+#else
         template<typename T2 = T, std::enable_if_t<std::is_convertible_v<T2*, T*>, int> = 0>
+#endif
         ShadowPtr(const ShadowPtr<T2>& other)
         {
             if (other.m_pControlBlock)
@@ -106,7 +129,12 @@ namespace prtm
          * @tparam T2 Source object type.
          * @param other Source ShadowPtr.
          */
+#if PRTM_HAS_CONCEPTS
+        template<typename T2 = T>
+        requires std::convertible_to<T2*, T*>
+#else
         template<typename T2 = T, std::enable_if_t<std::is_convertible_v<T2*, T*>, int> = 0>
+#endif
         ShadowPtr(ShadowPtr<T2>&& other) noexcept
         {
             m_pTyped = other.m_pTyped;
@@ -141,7 +169,11 @@ namespace prtm
          * @param other Source ShadowPtr.
          * @return Reference to this object.
          */
+#if PRTM_HAS_CONCEPTS
+        template<typename T2 = T>
+#else
         template<typename T2 = T, std::enable_if_t<std::is_convertible_v<T2*, T*>, int> = 0>
+#endif
         ShadowPtr& operator=(const ShadowPtr<T2>& other)
         {
             if (static_cast<const void*>(this) != static_cast<const void*>(&other))
@@ -181,7 +213,12 @@ namespace prtm
          * @param other Source ShadowPtr.
          * @return Reference to this object.
          */
+#if PRTM_HAS_CONCEPTS
+        template<typename T2 = T>
+        requires std::convertible_to<T2*, T*>
+#else
         template<typename T2 = T, std::enable_if_t<std::is_convertible_v<T2*, T*>, int> = 0>
+#endif
         ShadowPtr& operator=(ShadowPtr<T2>&& other) noexcept
         {
             if (static_cast<const void*>(this) != static_cast<const void*>(&other))
@@ -520,7 +557,12 @@ namespace prtm
          * @param args Arguments forwarded to the object constructor.
          * @return OwnerPtr managing the newly created object.
          */
+#if PRTM_HAS_CONCEPTS
+        template<typename... ArgTypes>
+        requires std::constructible_from<VT, ArgTypes...>
+#else
         template<typename... ArgTypes, std::enable_if_t<std::is_constructible_v<VT, ArgTypes...>, int> = 0>
+#endif
         static OwnerPtr Create(ArgTypes&&... args)
         {
             auto pRaw = new VT{ std::forward<ArgTypes>(args)... };
@@ -540,7 +582,12 @@ namespace prtm
          * @tparam DT2 Source deleter type.
          * @param pOther Raw pointer to take ownership of.
          */
+#if PRTM_HAS_CONCEPTS
+        template<typename VT2 = VT, typename DT2 = DT>
+        requires std::convertible_to<VT2*, VT*>
+#else
         template<typename VT2 = VT, typename DT2 = DT, std::enable_if_t<std::is_convertible_v<VT2*, VT*>, int> = 0>
+#endif
         OwnerPtr(typename OwnerPtr<VT2, DT2>::Pointer pOther)
         {
             if (pOther)
@@ -566,7 +613,12 @@ namespace prtm
          * @tparam DT2 Source deleter type.
          * @param other Source OwnerPtr.
          */
+#if PRTM_HAS_CONCEPTS
+        template<typename VT2 = VT, typename DT2 = detail::DefaultDeleter<VT2>>
+        requires std::convertible_to<VT2*, VT*>
+#else
         template<typename VT2 = VT, typename DT2 = detail::DefaultDeleter<VT2>, std::enable_if_t<std::is_convertible_v<VT2*, VT*>, int> = 0>
+#endif
         OwnerPtr(OwnerPtr<VT2, DT2>&& other) noexcept
         {
             m_pTyped = other.m_pTyped;
@@ -582,7 +634,12 @@ namespace prtm
          * @param other Source OwnerPtr.
          * @return Reference to this object.
          */
+#if PRTM_HAS_CONCEPTS
+        template<typename VT2 = VT, typename DT2 = detail::DefaultDeleter<VT2>>
+        requires std::convertible_to<VT2*, VT*>
+#else
         template<typename VT2 = VT, typename DT2 = detail::DefaultDeleter<VT2>, std::enable_if_t<std::is_convertible_v<VT2*, VT*>, int> = 0>
+#endif
         OwnerPtr& operator=(OwnerPtr<VT2, DT2>&& other) noexcept
         {
             if (static_cast<const void*>(this) != static_cast<const void*>(&other))
@@ -647,7 +704,12 @@ namespace prtm
          * @tparam DT2 Source deleter type.
          * @param pNew New raw pointer.
          */
+#if PRTM_HAS_CONCEPTS
+        template<typename VT2 = VT, typename DT2 = DT>
+        requires std::convertible_to<VT2*, VT*>
+#else
         template<typename VT2 = VT, typename DT2 = DT, std::enable_if_t<std::is_convertible_v<VT2*, VT*>, int> = 0>
+#endif
         void Reset(typename OwnerPtr<VT2, DT2>::Pointer pNew)
         {
             Destroy();
@@ -695,7 +757,12 @@ namespace prtm
          * @tparam DT2 Target deleter type.
          * @return New OwnerPtr receiving ownership.
          */
+#if PRTM_HAS_CONCEPTS
+        template<typename VT2 = VT, typename DT2 = detail::DefaultDeleter<VT2>>
+        requires std::convertible_to<VT2*, VT*>
+#else
         template<typename VT2 = VT, typename DT2 = detail::DefaultDeleter<VT2>, std::enable_if_t<std::is_convertible_v<VT2*, VT*>, int> = 0>
+#endif
         [[nodiscard]] OwnerPtr<VT2, DT2> Transfer()
         {
             OwnerPtr<VT2, DT2> transferred;
@@ -739,7 +806,12 @@ namespace prtm
          * @tparam VT2 Target ShadowPtr type.
          * @return Newly created ShadowPtr.
          */
+#if PRTM_HAS_CONCEPTS
+        template<typename VT2 = VT>
+        requires std::convertible_to<VT*, VT2*>
+#else
         template<typename VT2 = VT, std::enable_if_t<std::is_convertible_v<VT*, VT2*>, int> = 0>
+#endif
         ShadowPtr<VT2> Shadow() const
         {
             ShadowPtr<VT2> shadow;
@@ -757,7 +829,12 @@ namespace prtm
          * @tparam VT2 Target ShadowPtr type.
          * @return Newly created ShadowPtr.
          */
+#if PRTM_HAS_CONCEPTS
+        template<typename VT2 = VT>
+        requires std::convertible_to<VT*, VT2*>
+#else
         template<typename VT2 = VT, std::enable_if_t<std::is_convertible_v<VT*, VT2*>, int> = 0>
+#endif
         ShadowPtr<VT2> Shadow()
         {
             ShadowPtr<VT2> shadow;

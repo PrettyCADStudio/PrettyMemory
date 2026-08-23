@@ -24,7 +24,7 @@ cmd = [
     '-B', path_to_string(build_dir),
     f'-DCXX_STD={std}'
 ]
-if sys.platform == "Windows":
+if sys.platform == "win32":
     cmd.append('-A')
     cmd.append('x64')
 else:
